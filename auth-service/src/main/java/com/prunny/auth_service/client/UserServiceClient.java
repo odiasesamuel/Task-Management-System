@@ -1,8 +1,7 @@
 package com.prunny.auth_service.client;
 
-import com.prunny.auth_service.domain.AuthUser;
 import com.prunny.auth_service.service.dto.CreateUserRequest;
-import com.prunny.auth_service.service.dto.UserCreationResponse;
+import com.prunny.auth_service.service.dto.CreateUserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +20,7 @@ public class UserServiceClient {
         this.userServiceUrl = userServiceUrl;
     }
 
-    public UserCreationResponse createUserProfile(CreateUserRequest userProfile) {
+    public CreateUserResponse createUserProfile(CreateUserRequest userProfile) {
         try {
             String url = userServiceUrl + "/api/users";
 
@@ -30,11 +29,11 @@ public class UserServiceClient {
 
             HttpEntity<CreateUserRequest> entity = new HttpEntity<>(userProfile, headers);
 
-            ResponseEntity<UserCreationResponse> response = restTemplate.exchange(
+            ResponseEntity<CreateUserResponse> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 entity,
-                UserCreationResponse.class
+                CreateUserResponse.class
             );
 
             logger.info("Successfully created user profile for auth user email: {}", response.getBody().getEmail());
@@ -43,7 +42,7 @@ public class UserServiceClient {
         } catch (Exception e) {
             logger.error("Error while creating user for auth user {}: {}",
                 userProfile.getEmail(), e.getMessage());
-            UserCreationResponse response = new UserCreationResponse();
+            CreateUserResponse response = new CreateUserResponse();
             response.setMessage("Unexpected response from user service");
             return response;
         }

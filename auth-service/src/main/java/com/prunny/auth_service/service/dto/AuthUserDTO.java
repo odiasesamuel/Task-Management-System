@@ -13,17 +13,10 @@ public class AuthUserDTO implements Serializable {
     private Long id;
 
     @NotNull
-    @Email
     private String email;
 
     @NotNull
     private String password;
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    private String phoneNumber;
 
     public Long getId() {
         return id;
@@ -43,18 +36,6 @@ public class AuthUserDTO implements Serializable {
 
     public String getPassword() {
         return password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setPassword(String password) {
@@ -86,11 +67,9 @@ public class AuthUserDTO implements Serializable {
     @Override
     public String toString() {
         return "AuthUserDTO{" +
-            "id=" + id +
-            ", email='" + email + '\'' +
-            ", password='" + password + '\'' +
-            ", name='" + name + '\'' +
-            ", phoneNumber='" + phoneNumber + '\'' +
-            '}';
+            "id=" + getId() +
+            ", email='" + getEmail() + "'" +
+            ", password='" + getPassword() + "'" +
+            "}";
     }
 }

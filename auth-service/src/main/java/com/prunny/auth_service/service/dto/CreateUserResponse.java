@@ -1,11 +1,11 @@
 package com.prunny.auth_service.service.dto;
 
-public class UserCreationResponse {
+public class CreateUserResponse {
     private String email;
     private String name;
     private String message;
 
-    public UserCreationResponse() {}
+    public CreateUserResponse() {}
 
     // Getters and setters
 

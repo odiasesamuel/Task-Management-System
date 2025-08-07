@@ -46,8 +46,8 @@ public class AuthUserService {
         this.jwtUtils = jwtUtils;
     }
 
-    public JwtResponse register(AuthUserDTO request) {
-        LOG.debug("Request to save AuthUser : {}", request);
+    public JwtResponse register(RegisterRequestDTO request) {
+        LOG.debug("Request to register AuthUser : {}", request);
         AuthUser authUser = authUserMapper.toEntity(request);
 
         if (authUserRepository.existsByEmail(request.getEmail())) throw new AlreadyExistsException("Oops " + request.getEmail() + " already exist!");
@@ -69,7 +69,7 @@ public class AuthUserService {
         );
         LOG.debug("Sending request to create user profile for: {}", userProfile.getEmail());
 
-        UserCreationResponse profileResponse = userServiceClient.createUserProfile(userProfile);
+        CreateUserResponse profileResponse = userServiceClient.createUserProfile(userProfile);
 
         return jwtResponse;
     }
