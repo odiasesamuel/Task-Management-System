@@ -50,7 +50,7 @@ public class AuthUserResource {
     }
 
     /**
-     * {@code POST  /auth-users/register} : Register a new authUser.
+     * {@code POST  /auth/register} : Register a new authUser.
      *
      * @param registerRequest the registerRequest to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new JwtResponse, or with status {@code 409 (Conflict)} if the authUser has already exists.
@@ -64,14 +64,14 @@ public class AuthUserResource {
 
         ApiResponse<JwtResponse> apiResponse = new ApiResponse<>("User Registration Sucessful", jwtResponse);
 
-        return ResponseEntity.created(new URI("/api/auth-users/" + jwtResponse.getId()))
+        return ResponseEntity.created(new URI("/api/auth/" + jwtResponse.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, jwtResponse.getId().toString()))
             .body(apiResponse);
     }
 
 
     /**
-     * {@code POST  /auth-users/login} : Login a new authUser.
+     * {@code POST  /auth/login} : Login a new authUser.
      *
      * @param loginRequest the loginRequest to login.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new JwtResponse, or with status {@code 500 (Internal Server Error)} if the email or password is wrong.
@@ -84,13 +84,13 @@ public class AuthUserResource {
 
         ApiResponse<JwtResponse> apiResponse = new ApiResponse<>("User Registration Sucessful", jwtResponse);
 
-        return ResponseEntity.created(new URI("/api/auth-users/" + jwtResponse.getId()))
+        return ResponseEntity.created(new URI("/api/auth/" + jwtResponse.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, jwtResponse.getId().toString()))
             .body(apiResponse);
     }
 
     /**
-     * {@code POST  /auth-users} : Create a new authUser.
+     * {@code POST  /auth} : Create a new authUser.
      *
      * @param authUserDTO the authUserDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new authUserDTO, or with status {@code 400 (Bad Request)} if the authUser has already an ID.
@@ -103,13 +103,13 @@ public class AuthUserResource {
             throw new BadRequestAlertException("A new authUser cannot already have an ID", ENTITY_NAME, "idexists");
         }
         authUserDTO = authUserService.save(authUserDTO);
-        return ResponseEntity.created(new URI("/api/auth-users/" + authUserDTO.getId()))
+        return ResponseEntity.created(new URI("/api/auth/" + authUserDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, authUserDTO.getId().toString()))
             .body(authUserDTO);
     }
 
     /**
-     * {@code PUT  /auth-users/:id} : Updates an existing authUser.
+     * {@code PUT  /auth/:id} : Updates an existing authUser.
      *
      * @param id the id of the authUserDTO to save.
      * @param authUserDTO the authUserDTO to update.
@@ -142,7 +142,7 @@ public class AuthUserResource {
     }
 
     /**
-     * {@code PATCH  /auth-users/:id} : Partial updates given fields of an existing authUser, field will ignore if it is null
+     * {@code PATCH  /auth/:id} : Partial updates given fields of an existing authUser, field will ignore if it is null
      *
      * @param id the id of the authUserDTO to save.
      * @param authUserDTO the authUserDTO to update.
@@ -178,7 +178,7 @@ public class AuthUserResource {
     }
 
     /**
-     * {@code GET  /auth-users} : get all the authUsers.
+     * {@code GET  /auth} : get all the authUsers.
      *
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of authUsers in body.
@@ -192,7 +192,7 @@ public class AuthUserResource {
     }
 
     /**
-     * {@code GET  /auth-users/:id} : get the "id" authUser.
+     * {@code GET  /auth/:id} : get the "id" authUser.
      *
      * @param id the id of the authUserDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the authUserDTO, or with status {@code 404 (Not Found)}.
@@ -205,7 +205,7 @@ public class AuthUserResource {
     }
 
     /**
-     * {@code DELETE  /auth-users/:id} : delete the "id" authUser.
+     * {@code DELETE  /auth/:id} : delete the "id" authUser.
      *
      * @param id the id of the authUserDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.

@@ -40,7 +40,7 @@ class AuthUserResourceIT {
     private static final String DEFAULT_PASSWORD = "AAAAAAAAAA";
     private static final String UPDATED_PASSWORD = "BBBBBBBBBB";
 
-    private static final String ENTITY_API_URL = "/api/auth-users";
+    private static final String ENTITY_API_URL = "/api/auth";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     private static Random random = new Random();
