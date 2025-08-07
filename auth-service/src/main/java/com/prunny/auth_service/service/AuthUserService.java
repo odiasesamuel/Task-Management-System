@@ -3,10 +3,7 @@ package com.prunny.auth_service.service;
 import com.prunny.auth_service.client.UserServiceClient;
 import com.prunny.auth_service.domain.AuthUser;
 import com.prunny.auth_service.repository.AuthUserRepository;
-import com.prunny.auth_service.service.dto.AuthUserDTO;
-import com.prunny.auth_service.service.dto.CreateUserRequest;
-import com.prunny.auth_service.service.dto.JwtResponse;
-import com.prunny.auth_service.service.dto.UserCreationResponse;
+import com.prunny.auth_service.service.dto.*;
 import com.prunny.auth_service.service.mapper.AuthUserMapper;
 import java.util.Optional;
 
@@ -16,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,28 +74,15 @@ public class AuthUserService {
         return jwtResponse;
     }
 
-    public JwtResponse login(AuthUserDTO request) {
-        LOG.debug("Request to save AuthUser : {}", request);
-        AuthUser authUser = authUserMapper.toEntity(request);
+    public JwtResponse login(LoginRequestDTO request) {
+        LOG.debug("Request to login AuthUser : {}", request);
+        AuthUser user = authUserRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Invalid email or password"));
 
-        /* Encode Password before saving to db */
-        authUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        authUser = authUserRepository.save(authUser);
+        boolean isPasswordValid = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (!isPasswordValid)  throw new BadCredentialsException("Invalid email or password");
 
-        /* Generate Jwt */
-        String authToken = jwtUtils.generateToken(authUser.getEmail(), authUser.getId());
-
-        JwtResponse jwtResponse = new JwtResponse(authUser.getId(), authUser.getEmail(), authToken);
-
-        // Call user service client to create user profile
-        CreateUserRequest userProfile = new CreateUserRequest(
-            request.getEmail(),
-            request.getName(),
-            request.getPhoneNumber()
-        );
-        LOG.debug("Sending request to create user profile for: {}", userProfile.getEmail());
-
-        UserCreationResponse profileResponse = userServiceClient.createUserProfile(userProfile);
+        String authToken = jwtUtils.generateToken(user.getEmail(), user.getId());
+        JwtResponse jwtResponse = new JwtResponse(user.getId(), user.getEmail(), authToken);
 
         return jwtResponse;
     }

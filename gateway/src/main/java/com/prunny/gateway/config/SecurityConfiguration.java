@@ -81,6 +81,7 @@ public class SecurityConfiguration {
                     .pathMatchers("/*.*").permitAll()
                     .pathMatchers("/api/authenticate").permitAll()
                     .pathMatchers("/services/authservice/api/auth-users/register").permitAll()
+                    .pathMatchers("/services/authservice/api/auth-users/login").permitAll()
                     .pathMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
                     .pathMatchers("/api/**").authenticated()
                     .pathMatchers("/services/*/management/health/readiness").permitAll()

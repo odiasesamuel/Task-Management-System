@@ -1,10 +1,12 @@
 package com.prunny.auth_service.web.rest;
 
+import com.prunny.auth_service.domain.AuthUser;
 import com.prunny.auth_service.repository.AuthUserRepository;
 import com.prunny.auth_service.service.AuthUserService;
 import com.prunny.auth_service.service.dto.ApiResponse;
 import com.prunny.auth_service.service.dto.AuthUserDTO;
 import com.prunny.auth_service.service.dto.JwtResponse;
+import com.prunny.auth_service.service.dto.LoginRequestDTO;
 import com.prunny.auth_service.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +30,7 @@ import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link com.prunny.auth_service.domain.AuthUser}.
+ * REST controller for managing {@link AuthUser}.
  */
 @RestController
 @RequestMapping("/api/auth-users")
@@ -49,6 +52,13 @@ public class AuthUserResource {
         this.authUserRepository = authUserRepository;
     }
 
+    /**
+     * {@code POST  /auth-users/register} : Register a new authUser.
+     *
+     * @param authUserDTO the authUserDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new JwtResponse, or with status {@code 400 (Bad Request)} if the authUser has already an ID.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<JwtResponse>> register(@Valid @RequestBody AuthUserDTO authUserDTO) throws URISyntaxException {
         LOG.debug("REST request to register AuthUser : {}", authUserDTO);
@@ -64,13 +74,18 @@ public class AuthUserResource {
             .body(apiResponse);
     }
 
+
+    /**
+     * {@code POST  /auth-users/register} : Register a new authUser.
+     *
+     * @param loginRequest the loginRequest to login.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new JwtResponse, or with status {@code 500 (Internal Server Error)} if the email or password is wrong.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<JwtResponse>> login(@Valid @RequestBody AuthUserDTO authUserDTO) throws URISyntaxException {
-        LOG.debug("REST request to login AuthUser : {}", authUserDTO);
-        if (authUserDTO.getId() != null) {
-            throw new BadRequestAlertException("A new authUser cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        JwtResponse jwtResponse = authUserService.login(authUserDTO);
+    public ResponseEntity<ApiResponse<JwtResponse>> login(@Valid @RequestBody LoginRequestDTO loginRequest) throws URISyntaxException {
+        LOG.debug("REST request to login AuthUser : {}", loginRequest);
+        JwtResponse jwtResponse = authUserService.login(loginRequest);
 
         ApiResponse<JwtResponse> apiResponse = new ApiResponse<>("User Registration Sucessful", jwtResponse);
 
@@ -78,10 +93,6 @@ public class AuthUserResource {
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, jwtResponse.getId().toString()))
             .body(apiResponse);
     }
-
-
-
-
 
     /**
      * {@code POST  /auth-users} : Create a new authUser.
@@ -178,7 +189,7 @@ public class AuthUserResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of authUsers in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<AuthUserDTO>> getAllAuthUsers(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<AuthUserDTO>> getAllAuthUsers(@ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of AuthUsers");
         Page<AuthUserDTO> page = authUserService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);

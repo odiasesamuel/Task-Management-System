@@ -86,9 +86,11 @@ public class AuthUserDTO implements Serializable {
     @Override
     public String toString() {
         return "AuthUserDTO{" +
-            "id=" + getId() +
-            ", email='" + getEmail() + "'" +
-            ", password='" + getPassword() + "'" +
-            "}";
+            "id=" + id +
+            ", email='" + email + '\'' +
+            ", password='" + password + '\'' +
+            ", name='" + name + '\'' +
+            ", phoneNumber='" + phoneNumber + '\'' +
+            '}';
     }
 }
