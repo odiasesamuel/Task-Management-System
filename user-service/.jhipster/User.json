@@ -1,0 +1,53 @@
+{
+  "annotations": {
+    "changelogDate": "20250805133245"
+  },
+  "applications": "*",
+  "clientRootFolder": "userService",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "entityTableName": "jhi_user",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "phoneNumber",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "profilePictureUrl",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "userService",
+  "name": "User",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityField": "roleName",
+      "otherEntityName": "role",
+      "otherEntityRelationshipName": "users",
+      "relationshipName": "roles",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityField": "teamName",
+      "otherEntityName": "team",
+      "otherEntityRelationshipName": "members",
+      "relationshipName": "teams",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

@@ -1,0 +1,38 @@
+{
+  "annotations": {
+    "changelogDate": "20250805133247"
+  },
+  "applications": "*",
+  "clientRootFolder": "userService",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "teamName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "microserviceName": "userService",
+  "name": "Team",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityField": "name",
+      "otherEntityName": "user",
+      "relationshipName": "admin",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityField": "name",
+      "otherEntityName": "user",
+      "otherEntityRelationshipName": "teams",
+      "relationshipName": "members",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

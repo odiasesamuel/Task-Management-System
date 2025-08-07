@@ -1,0 +1,9 @@
+entity AuthUser {
+  email String required unique,
+  password String required
+}
+
+paginate AuthUser with pagination
+service AuthUser with serviceClass
+dto AuthUser with mapstruct
+

@@ -1,0 +1,31 @@
+{
+  "annotations": {
+    "changelogDate": "20250805133246"
+  },
+  "applications": "*",
+  "clientRootFolder": "userService",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "roleName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "microserviceName": "userService",
+  "name": "Role",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityField": "name",
+      "otherEntityName": "user",
+      "otherEntityRelationshipName": "roles",
+      "relationshipName": "users",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

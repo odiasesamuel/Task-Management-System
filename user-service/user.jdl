@@ -1,0 +1,30 @@
+entity User {
+  name String required
+  email String required
+  phoneNumber String
+  profilePictureUrl String
+}
+
+entity Role {
+  roleName String required
+}
+
+entity Team {
+  teamName String required
+}
+
+relationship ManyToMany {
+  User{roles(roleName)} to Role{users(name)}
+}
+
+relationship ManyToMany {
+  User{teams(teamName)} to Team{members(name)}
+}
+
+relationship ManyToOne {
+  Team{admin(name)} to User
+}
+
+dto * with mapstruct
+service * with serviceClass
+paginate * with pagination
