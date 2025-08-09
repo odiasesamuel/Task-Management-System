@@ -3,11 +3,11 @@ package com.prunny.auth_service.service;
 import com.prunny.auth_service.client.UserServiceClient;
 import com.prunny.auth_service.domain.AuthUser;
 import com.prunny.auth_service.repository.AuthUserRepository;
+import com.prunny.auth_service.security.TokenService;
 import com.prunny.auth_service.service.dto.*;
 import com.prunny.auth_service.service.mapper.AuthUserMapper;
 import java.util.Optional;
 
-import com.prunny.auth_service.utils.JwtUtils;
 import com.prunny.auth_service.web.rest.errors.AlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +36,14 @@ public class AuthUserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final JwtUtils jwtUtils;
+    private final TokenService tokenService;
 
-    public AuthUserService(AuthUserRepository authUserRepository, AuthUserMapper authUserMapper, UserServiceClient userServiceClient, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+    public AuthUserService(AuthUserRepository authUserRepository, AuthUserMapper authUserMapper, UserServiceClient userServiceClient, PasswordEncoder passwordEncoder, TokenService tokenService) {
         this.authUserRepository = authUserRepository;
         this.authUserMapper = authUserMapper;
         this.userServiceClient = userServiceClient;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtils = jwtUtils;
+        this.tokenService = tokenService;
     }
 
     public JwtResponse register(RegisterRequestDTO request) {
@@ -57,7 +57,7 @@ public class AuthUserService {
         authUser = authUserRepository.save(authUser);
 
         /* Generate Jwt */
-        String authToken = jwtUtils.generateToken(authUser.getEmail(), authUser.getId());
+        String authToken = tokenService.generateToken(authUser.getEmail(), authUser.getId());
 
         JwtResponse jwtResponse = new JwtResponse(authUser.getId(), authUser.getEmail(), authToken);
 
@@ -81,10 +81,14 @@ public class AuthUserService {
         boolean isPasswordValid = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!isPasswordValid)  throw new BadCredentialsException("Invalid email or password");
 
-        String authToken = jwtUtils.generateToken(user.getEmail(), user.getId());
+        String authToken = tokenService.generateToken(user.getEmail(), user.getId());
         JwtResponse jwtResponse = new JwtResponse(user.getId(), user.getEmail(), authToken);
 
         return jwtResponse;
+    }
+
+    public boolean validateToken(String token) {
+        return tokenService.validateToken(token);
     }
 
     /**

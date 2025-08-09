@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -87,6 +88,20 @@ public class AuthUserResource {
         return ResponseEntity.created(new URI("/api/auth/" + jwtResponse.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, jwtResponse.getId().toString()))
             .body(apiResponse);
+    }
+
+
+    @GetMapping("/validate")
+    public ResponseEntity<Void> validateToken(
+        @RequestHeader("Authorization") String authHeader) {
+        LOG.debug("REST request to login validateToken : {}", authHeader);
+
+        // Authorization: Bearer <token>
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return authUserService.validateToken(authHeader.substring(7))
+            ? ResponseEntity.ok().build()
+            : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     /**

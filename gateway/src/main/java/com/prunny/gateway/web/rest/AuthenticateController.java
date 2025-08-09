@@ -30,8 +30,8 @@ import reactor.core.publisher.Mono;
 /**
  * Controller to authenticate users.
  */
-@RestController
-@RequestMapping("/api")
+//@RestController
+//@RequestMapping("/api")
 public class AuthenticateController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticateController.class);

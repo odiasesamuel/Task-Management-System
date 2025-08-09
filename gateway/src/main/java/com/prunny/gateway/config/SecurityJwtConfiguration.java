@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 
-@Configuration
+//@Configuration
 public class SecurityJwtConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityJwtConfiguration.class);

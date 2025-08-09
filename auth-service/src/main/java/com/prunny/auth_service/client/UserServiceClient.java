@@ -15,7 +15,7 @@ public class UserServiceClient {
     private final String userServiceUrl;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceClient.class);
 
-    public UserServiceClient(RestTemplate restTemplate, @Value("${auth.service.url:http://localhost:8081}") String userServiceUrl) {
+    public UserServiceClient(RestTemplate restTemplate, @Value("${user.service.url:http://localhost:8081}") String userServiceUrl) {
         this.restTemplate = restTemplate;
         this.userServiceUrl = userServiceUrl;
     }
