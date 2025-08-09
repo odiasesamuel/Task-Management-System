@@ -83,7 +83,7 @@ public class AuthUserResource {
         LOG.debug("REST request to login AuthUser : {}", loginRequest);
         JwtResponse jwtResponse = authUserService.login(loginRequest);
 
-        ApiResponse<JwtResponse> apiResponse = new ApiResponse<>("User Registration Sucessful", jwtResponse);
+        ApiResponse<JwtResponse> apiResponse = new ApiResponse<>("User Login Sucessful", jwtResponse);
 
         return ResponseEntity.created(new URI("/api/auth/" + jwtResponse.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, jwtResponse.getId().toString()))

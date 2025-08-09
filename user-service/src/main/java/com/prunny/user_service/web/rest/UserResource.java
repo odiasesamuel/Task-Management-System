@@ -48,6 +48,25 @@ public class UserResource {
     }
 
     /**
+     * {@code POST  /users/internal} : Create a new user, called from the auth service.
+     *
+     * @param userDTO the userDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new userDTO, or with status {@code 400 (Bad Request)} if the user has already an ID.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("/internal")
+    public ResponseEntity<UserDTO> createUserInternal(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
+        LOG.debug("REST request to save User : {}", userDTO);
+        if (userDTO.getId() != null) {
+            throw new BadRequestAlertException("A new user cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        userDTO = userService.save(userDTO);
+        return ResponseEntity.created(new URI("/api/users/" + userDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, userDTO.getId().toString()))
+            .body(userDTO);
+    }
+
+    /**
      * {@code POST  /users} : Create a new user.
      *
      * @param userDTO the userDTO to create.

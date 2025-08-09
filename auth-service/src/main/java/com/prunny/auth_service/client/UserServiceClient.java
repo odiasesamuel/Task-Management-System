@@ -22,7 +22,7 @@ public class UserServiceClient {
 
     public CreateUserResponse createUserProfile(CreateUserRequest userProfile) {
         try {
-            String url = userServiceUrl + "/api/users";
+            String url = userServiceUrl + "/api/users/internal";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
