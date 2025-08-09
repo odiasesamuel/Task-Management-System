@@ -110,6 +110,18 @@ public class UserService {
     }
 
     /**
+     * Get one user by email.
+     *
+     * @param email the email of the entity.
+     * @return the entity.
+     */
+    @Transactional(readOnly = true)
+    public Optional<UserDTO> findOneByEmail(String email) {
+        LOG.debug("Request to get User : {}", email);
+        return userRepository.findOneByEmailWithEagerRelationships(email).map(userMapper::toDto);
+    }
+
+    /**
      * Delete the user by id.
      *
      * @param id the id of the entity.

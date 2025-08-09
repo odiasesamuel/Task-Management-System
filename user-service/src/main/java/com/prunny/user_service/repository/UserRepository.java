@@ -20,6 +20,10 @@ public interface UserRepository extends UserRepositoryWithBagRelationships, JpaR
         return this.fetchBagRelationships(this.findById(id));
     }
 
+    default Optional<User> findOneByEmailWithEagerRelationships(String email) {
+        return this.fetchBagRelationships(this.findByEmail(email));
+    }
+
     default List<User> findAllWithEagerRelationships() {
         return this.fetchBagRelationships(this.findAll());
     }
@@ -27,4 +31,8 @@ public interface UserRepository extends UserRepositoryWithBagRelationships, JpaR
     default Page<User> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
+
+    Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

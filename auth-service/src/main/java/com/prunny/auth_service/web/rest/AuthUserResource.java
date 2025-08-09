@@ -90,7 +90,11 @@ public class AuthUserResource {
             .body(apiResponse);
     }
 
-
+    /**
+     * {@code GET  /validate} : get the validity of a token.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)}, or with status {@code 401 (Unauthorized)}.
+     */
     @GetMapping("/validate")
     public ResponseEntity<Void> validateToken(
         @RequestHeader("Authorization") String authHeader) {

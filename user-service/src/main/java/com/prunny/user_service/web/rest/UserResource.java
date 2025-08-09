@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -73,6 +74,7 @@ public class UserResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new userDTO, or with status {@code 400 (Bad Request)} if the user has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
         LOG.debug("REST request to save User : {}", userDTO);
@@ -95,6 +97,7 @@ public class UserResource {
      * or with status {@code 500 (Internal Server Error)} if the userDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
         @PathVariable(value = "id", required = false) final Long id,
@@ -118,6 +121,31 @@ public class UserResource {
             .body(userDTO);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("email/{email}/admin")
+    public ResponseEntity<UserDTO> updateUserByEmail(
+        @PathVariable(value = "email", required = false) final String email,
+        @Valid @RequestBody UserDTO userDTO
+    ) throws URISyntaxException {
+        LOG.debug("REST request to update User : {}, {}", email, userDTO);
+        if (userDTO.getEmail() == null) {
+            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "email null");
+        }
+        if (!Objects.equals(email, userDTO.getEmail())) {
+            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "email invalid");
+        }
+
+        if (!userRepository.existsByEmail(email)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "email not found");
+        }
+
+        userDTO = userService.update(userDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userDTO.getEmail().toString()))
+            .body(userDTO);
+    }
+
+
     /**
      * {@code PATCH  /users/:id} : Partial updates given fields of an existing user, field will ignore if it is null
      *
@@ -129,6 +157,7 @@ public class UserResource {
      * or with status {@code 500 (Internal Server Error)} if the userDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<UserDTO> partialUpdateUser(
         @PathVariable(value = "id", required = false) final Long id,
@@ -154,6 +183,39 @@ public class UserResource {
         );
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #email == authentication.principal.subject")
+    @PatchMapping(value = "email/{email}", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<UserDTO> partialUpdateUserByEmail(
+        @PathVariable(value = "email", required = false) final String email,
+        @NotNull @RequestBody UserDTO userDTO
+    ) throws URISyntaxException {
+        LOG.debug("REST request to partial update User by email : {}, {}", email, userDTO);
+
+        if (userDTO.getEmail() == null) {
+            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "emailnull");
+        }
+        if (!Objects.equals(email, userDTO.getEmail())) {
+            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "emailinvalid");
+        }
+
+        if ((userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) ||
+            (userDTO.getTeams() != null && !userDTO.getTeams().isEmpty())) {
+            throw new BadRequestAlertException("Roles and teams cannot be updated through this endpoint", ENTITY_NAME, "roles_teams_update_forbidden");
+        }
+
+
+        if (!userRepository.existsByEmail(email)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "emailnotfound");
+        }
+
+        Optional<UserDTO> result = userService.partialUpdate(userDTO);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userDTO.getEmail())
+        );
+    }
+
     /**
      * {@code GET  /users} : get all the users.
      *
@@ -161,6 +223,7 @@ public class UserResource {
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of users in body.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
     public ResponseEntity<List<UserDTO>> getAllUsers(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
@@ -183,10 +246,25 @@ public class UserResource {
      * @param id the id of the userDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the userDTO, or with status {@code 404 (Not Found)}.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
         LOG.debug("REST request to get User : {}", id);
         Optional<UserDTO> userDTO = userService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(userDTO);
+    }
+
+    /**
+     * {@code GET  /users/email/:email} : get the "email" user.
+     *
+     * @param email the email of the userDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the userDTO, or with status {@code 404 (Not Found)}.
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #email == authentication.principal.subject")
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
+        LOG.debug("REST request to get User : {}", email);
+        Optional<UserDTO> userDTO = userService.findOneByEmail(email);
         return ResponseUtil.wrapOrNotFound(userDTO);
     }
 
@@ -196,6 +274,7 @@ public class UserResource {
      * @param id the id of the userDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete User : {}", id);

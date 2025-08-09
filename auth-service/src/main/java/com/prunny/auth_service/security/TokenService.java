@@ -29,7 +29,7 @@ public class TokenService {
             .subject(email)
             .issuedAt(now)
             .expiresAt(now.plus(10, ChronoUnit.HOURS))
-            .claim(AUTHORITIES_CLAIM, Arrays.asList("ROLE_USER"))
+            .claim(AUTHORITIES_CLAIM, Arrays.asList("ROLE_ADMIN"))
             .claim("userId", userId)
             .build();
 
