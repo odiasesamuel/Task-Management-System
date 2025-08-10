@@ -4,7 +4,7 @@ import com.prunny.user_service.domain.Role;
 import com.prunny.user_service.domain.Team;
 import com.prunny.user_service.domain.User;
 import com.prunny.user_service.service.dto.RoleDTO;
-import com.prunny.user_service.service.dto.TeamDTO;
+import com.prunny.user_service.service.dto.TeamResponseDTO;
 import com.prunny.user_service.service.dto.UserDTO;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,10 +38,10 @@ public interface UserMapper extends EntityMapper<UserDTO, User> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     @Mapping(target = "teamName", source = "teamName")
-    TeamDTO toDtoTeamTeamName(Team team);
+    TeamResponseDTO toDtoTeamTeamName(Team team);
 
     @Named("teamTeamNameSet")
-    default Set<TeamDTO> toDtoTeamTeamNameSet(Set<Team> team) {
+    default Set<TeamResponseDTO> toDtoTeamTeamNameSet(Set<Team> team) {
         return team.stream().map(this::toDtoTeamTeamName).collect(Collectors.toSet());
     }
 }

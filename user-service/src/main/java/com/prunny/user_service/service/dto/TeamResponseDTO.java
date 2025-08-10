@@ -10,7 +10,7 @@ import java.util.Set;
  * A DTO for the {@link com.prunny.user_service.domain.Team} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class TeamDTO implements Serializable {
+public class TeamResponseDTO implements Serializable {
 
     private Long id;
 
@@ -58,11 +58,11 @@ public class TeamDTO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TeamDTO)) {
+        if (!(o instanceof TeamResponseDTO)) {
             return false;
         }
 
-        TeamDTO teamDTO = (TeamDTO) o;
+        TeamResponseDTO teamDTO = (TeamResponseDTO) o;
         if (this.id == null) {
             return false;
         }

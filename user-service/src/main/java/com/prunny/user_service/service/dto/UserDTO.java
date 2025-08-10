@@ -26,7 +26,7 @@ public class UserDTO implements Serializable {
 
     private Set<RoleDTO> roles = new HashSet<>();
 
-    private Set<TeamDTO> teams = new HashSet<>();
+    private Set<TeamResponseDTO> teams = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -76,11 +76,11 @@ public class UserDTO implements Serializable {
         this.roles = roles;
     }
 
-    public Set<TeamDTO> getTeams() {
+    public Set<TeamResponseDTO> getTeams() {
         return teams;
     }
 
-    public void setTeams(Set<TeamDTO> teams) {
+    public void setTeams(Set<TeamResponseDTO> teams) {
         this.teams = teams;
     }
 

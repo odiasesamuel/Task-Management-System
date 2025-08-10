@@ -24,7 +24,7 @@ public class Team implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "team_name", nullable = false)
+    @Column(name = "team_name", nullable = false, unique = true)
     private String teamName;
 
     @ManyToOne(fetch = FetchType.LAZY)

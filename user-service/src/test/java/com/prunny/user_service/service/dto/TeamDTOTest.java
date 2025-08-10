@@ -9,10 +9,10 @@ class TeamDTOTest {
 
     @Test
     void dtoEqualsVerifier() throws Exception {
-        TestUtil.equalsVerifier(TeamDTO.class);
-        TeamDTO teamDTO1 = new TeamDTO();
+        TestUtil.equalsVerifier(TeamResponseDTO.class);
+        TeamResponseDTO teamDTO1 = new TeamResponseDTO();
         teamDTO1.setId(1L);
-        TeamDTO teamDTO2 = new TeamDTO();
+        TeamResponseDTO teamDTO2 = new TeamResponseDTO();
         assertThat(teamDTO1).isNotEqualTo(teamDTO2);
         teamDTO2.setId(teamDTO1.getId());
         assertThat(teamDTO1).isEqualTo(teamDTO2);

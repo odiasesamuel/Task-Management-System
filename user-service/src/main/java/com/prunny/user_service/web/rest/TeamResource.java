@@ -2,7 +2,8 @@ package com.prunny.user_service.web.rest;
 
 import com.prunny.user_service.repository.TeamRepository;
 import com.prunny.user_service.service.TeamService;
-import com.prunny.user_service.service.dto.TeamDTO;
+import com.prunny.user_service.service.dto.TeamRequestDTO;
+import com.prunny.user_service.service.dto.TeamResponseDTO;
 import com.prunny.user_service.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -50,90 +52,46 @@ public class TeamResource {
     /**
      * {@code POST  /teams} : Create a new team.
      *
-     * @param teamDTO the teamDTO to create.
+     * @param teamRequestDTO the teamRequestDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new teamDTO, or with status {@code 400 (Bad Request)} if the team has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
-    public ResponseEntity<TeamDTO> createTeam(@Valid @RequestBody TeamDTO teamDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Team : {}", teamDTO);
-        if (teamDTO.getId() != null) {
-            throw new BadRequestAlertException("A new team cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        teamDTO = teamService.save(teamDTO);
-        return ResponseEntity.created(new URI("/api/teams/" + teamDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, teamDTO.getId().toString()))
-            .body(teamDTO);
+    public ResponseEntity<TeamResponseDTO> createTeam(@Valid @RequestBody TeamRequestDTO teamRequestDTO) throws URISyntaxException {
+        LOG.debug("REST request to save Team : {}", teamRequestDTO);
+        TeamResponseDTO teamResponseDTO = teamService.save(teamRequestDTO);
+
+        return ResponseEntity.created(new URI("/api/teams/" + teamResponseDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, teamResponseDTO.getId().toString()))
+            .body(teamResponseDTO);
     }
 
     /**
      * {@code PUT  /teams/:id} : Updates an existing team.
      *
      * @param id the id of the teamDTO to save.
-     * @param teamDTO the teamDTO to update.
+     * @param teamRequestDTO the teamRequestDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated teamDTO,
      * or with status {@code 400 (Bad Request)} if the teamDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the teamDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<TeamDTO> updateTeam(
+    public ResponseEntity<TeamResponseDTO> updateTeam(
         @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody TeamDTO teamDTO
+        @Valid @RequestBody TeamRequestDTO teamRequestDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Team : {}, {}", id, teamDTO);
-        if (teamDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, teamDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
+        LOG.debug("REST request to update Team : {}, {}", id, teamRequestDTO);
 
-        if (!teamRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
+        TeamResponseDTO updatedTeam = teamService.update(id, teamRequestDTO);
 
-        teamDTO = teamService.update(teamDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, teamDTO.getId().toString()))
-            .body(teamDTO);
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, updatedTeam.getId().toString()))
+            .body(updatedTeam);
     }
 
-    /**
-     * {@code PATCH  /teams/:id} : Partial updates given fields of an existing team, field will ignore if it is null
-     *
-     * @param id the id of the teamDTO to save.
-     * @param teamDTO the teamDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated teamDTO,
-     * or with status {@code 400 (Bad Request)} if the teamDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the teamDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the teamDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<TeamDTO> partialUpdateTeam(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody TeamDTO teamDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Team partially : {}, {}", id, teamDTO);
-        if (teamDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, teamDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!teamRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<TeamDTO> result = teamService.partialUpdate(teamDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, teamDTO.getId().toString())
-        );
-    }
 
     /**
      * {@code GET  /teams} : get all the teams.
@@ -142,13 +100,14 @@ public class TeamResource {
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of teams in body.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
-    public ResponseEntity<List<TeamDTO>> getAllTeams(
+    public ResponseEntity<List<TeamResponseDTO>> getAllTeams(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
         LOG.debug("REST request to get a page of Teams");
-        Page<TeamDTO> page;
+        Page<TeamResponseDTO> page;
         if (eagerload) {
             page = teamService.findAllWithEagerRelationships(pageable);
         } else {
@@ -165,9 +124,10 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the teamDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TeamDTO> getTeam(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.canAccessTeam(#id, authentication.principal.subject)")
+    public ResponseEntity<TeamResponseDTO> getTeam(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Team : {}", id);
-        Optional<TeamDTO> teamDTO = teamService.findOne(id);
+        Optional<TeamResponseDTO> teamDTO = teamService.findOne(id);
         return ResponseUtil.wrapOrNotFound(teamDTO);
     }
 
@@ -177,6 +137,7 @@ public class TeamResource {
      * @param id the id of the teamDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Team : {}", id);

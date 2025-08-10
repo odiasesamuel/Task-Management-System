@@ -13,7 +13,7 @@ import com.prunny.user_service.IntegrationTest;
 import com.prunny.user_service.domain.Team;
 import com.prunny.user_service.repository.TeamRepository;
 import com.prunny.user_service.service.TeamService;
-import com.prunny.user_service.service.dto.TeamDTO;
+import com.prunny.user_service.service.dto.TeamResponseDTO;
 import com.prunny.user_service.service.mapper.TeamMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
@@ -115,7 +115,7 @@ class TeamResourceIT {
     void createTeam() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the Team
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
         var returnedTeamDTO = om.readValue(
             restTeamMockMvc
                 .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(teamDTO)))
@@ -123,7 +123,7 @@ class TeamResourceIT {
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            TeamDTO.class
+            TeamResponseDTO.class
         );
 
         // Validate the Team in the database
@@ -139,7 +139,7 @@ class TeamResourceIT {
     void createTeamWithExistingId() throws Exception {
         // Create the Team with an existing ID
         team.setId(1L);
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
@@ -160,7 +160,7 @@ class TeamResourceIT {
         team.setTeamName(null);
 
         // Create the Team, which fails.
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         restTeamMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(teamDTO)))
@@ -236,7 +236,7 @@ class TeamResourceIT {
         // Disconnect from session so that the updates on updatedTeam are not directly saved in db
         em.detach(updatedTeam);
         updatedTeam.teamName(UPDATED_TEAM_NAME);
-        TeamDTO teamDTO = teamMapper.toDto(updatedTeam);
+        TeamResponseDTO teamDTO = teamMapper.toDto(updatedTeam);
 
         restTeamMockMvc
             .perform(put(ENTITY_API_URL_ID, teamDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(teamDTO)))
@@ -254,7 +254,7 @@ class TeamResourceIT {
         team.setId(longCount.incrementAndGet());
 
         // Create the Team
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restTeamMockMvc
@@ -272,7 +272,7 @@ class TeamResourceIT {
         team.setId(longCount.incrementAndGet());
 
         // Create the Team
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restTeamMockMvc
@@ -294,7 +294,7 @@ class TeamResourceIT {
         team.setId(longCount.incrementAndGet());
 
         // Create the Team
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restTeamMockMvc
@@ -366,7 +366,7 @@ class TeamResourceIT {
         team.setId(longCount.incrementAndGet());
 
         // Create the Team
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restTeamMockMvc
@@ -386,7 +386,7 @@ class TeamResourceIT {
         team.setId(longCount.incrementAndGet());
 
         // Create the Team
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restTeamMockMvc
@@ -408,7 +408,7 @@ class TeamResourceIT {
         team.setId(longCount.incrementAndGet());
 
         // Create the Team
-        TeamDTO teamDTO = teamMapper.toDto(team);
+        TeamResponseDTO teamDTO = teamMapper.toDto(team);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restTeamMockMvc

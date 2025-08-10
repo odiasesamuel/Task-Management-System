@@ -37,4 +37,12 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("select team from Team team left join fetch team.admin where team.id =:id")
     Optional<Team> findOneWithToOneRelationships(@Param("id") Long id);
+
+    boolean existsByTeamName(String teamName);
+
+    Optional<Team> findByTeamName(String teamName);
+
+    @Modifying
+    @Query(value = "DELETE FROM rel_jhi_user__teams WHERE teams_id = :teamId", nativeQuery = true)
+    void deleteTeamUserRelationships(@Param("teamId") Long teamId);
 }
