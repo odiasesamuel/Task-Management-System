@@ -17,7 +17,7 @@ public class RoleDTO implements Serializable {
     @NotNull
     private String roleName;
 
-    private Set<UserDTO> users = new HashSet<>();
+    private Set<UserResponseDTO> users = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -35,11 +35,11 @@ public class RoleDTO implements Serializable {
         this.roleName = roleName;
     }
 
-    public Set<UserDTO> getUsers() {
+    public Set<UserResponseDTO> getUsers() {
         return users;
     }
 
-    public void setUsers(Set<UserDTO> users) {
+    public void setUsers(Set<UserResponseDTO> users) {
         this.users = users;
     }
 

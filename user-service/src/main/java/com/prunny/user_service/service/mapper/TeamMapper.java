@@ -4,7 +4,7 @@ import com.prunny.user_service.domain.Team;
 import com.prunny.user_service.domain.User;
 import com.prunny.user_service.service.dto.TeamRequestDTO;
 import com.prunny.user_service.service.dto.TeamResponseDTO;
-import com.prunny.user_service.service.dto.UserDTO;
+import com.prunny.user_service.service.dto.UserResponseDTO;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.*;
@@ -22,11 +22,6 @@ public interface TeamMapper extends EntityMapper<TeamResponseDTO, Team> {
     @Mapping(target = "removeMembers", ignore = true)
     Team toEntity(TeamRequestDTO teamDTO);
 
-//    default Team toEntity(TeamRequestDTO dto, Set<User> members) {
-//        Team team = toEntity(dto);
-//        team.setMembers(members);
-//        return team;
-//    }
 
     @Named("userName")
     @BeanMapping(ignoreByDefault = true)
@@ -35,10 +30,10 @@ public interface TeamMapper extends EntityMapper<TeamResponseDTO, Team> {
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "profilePictureUrl", source = "profilePictureUrl")
-    UserDTO toDtoUserName(User user);
+    UserResponseDTO toDtoUserName(User user);
 
     @Named("userNameSet")
-    default Set<UserDTO> toDtoUserNameSet(Set<User> user) {
+    default Set<UserResponseDTO> toDtoUserNameSet(Set<User> user) {
         return user.stream().map(this::toDtoUserName).collect(Collectors.toSet());
     }
 }

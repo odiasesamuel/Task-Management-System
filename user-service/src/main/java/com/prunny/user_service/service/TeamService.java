@@ -7,7 +7,6 @@ import com.prunny.user_service.repository.UserRepository;
 import com.prunny.user_service.security.SecurityUtils;
 import com.prunny.user_service.service.dto.TeamRequestDTO;
 import com.prunny.user_service.service.dto.TeamResponseDTO;
-import com.prunny.user_service.service.dto.UserDTO;
 import com.prunny.user_service.service.mapper.TeamMapper;
 
 import java.util.HashSet;

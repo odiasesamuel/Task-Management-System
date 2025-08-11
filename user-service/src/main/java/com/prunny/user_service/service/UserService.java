@@ -1,10 +1,19 @@
 package com.prunny.user_service.service;
 
+import com.prunny.user_service.domain.Role;
 import com.prunny.user_service.domain.User;
+import com.prunny.user_service.repository.RoleRepository;
 import com.prunny.user_service.repository.UserRepository;
-import com.prunny.user_service.service.dto.UserDTO;
+import com.prunny.user_service.service.dto.UserRequestDTO;
+import com.prunny.user_service.service.dto.UserResponseDTO;
 import com.prunny.user_service.service.mapper.UserMapper;
+
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+
+import com.prunny.user_service.web.rest.errors.AlreadyExistException;
+import com.prunny.user_service.web.rest.errors.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,33 +34,31 @@ public class UserService {
 
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    private final RoleRepository roleRepository;
+
+    public UserService(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.roleRepository = roleRepository;
     }
 
     /**
      * Save a user.
      *
-     * @param userDTO the entity to save.
+     * @param userRequestDTO the entity to save.
      * @return the persisted entity.
      */
-    public UserDTO save(UserDTO userDTO) {
-        LOG.debug("Request to save User : {}", userDTO);
-        User user = userMapper.toEntity(userDTO);
-        user = userRepository.save(user);
-       return userMapper.toDto(user);
-    }
+    public UserResponseDTO save(UserRequestDTO userRequestDTO) {
+        LOG.debug("Request to save User : {}", userRequestDTO);
 
-    /**
-     * Update a user.
-     *
-     * @param userDTO the entity to save.
-     * @return the persisted entity.
-     */
-    public UserDTO update(UserDTO userDTO) {
-        LOG.debug("Request to update User : {}", userDTO);
-        User user = userMapper.toEntity(userDTO);
+        if (userRepository.existsByEmail(userRequestDTO.getEmail())) throw new AlreadyExistException("Oops"  + userRequestDTO.getEmail() + " already exist!");
+
+        Role memberRole = roleRepository.findById(3L).orElseThrow(() -> new ResourceNotFoundException("Role designated as member does not exist in database therefore user creation failed"));
+        Set<Role> roles = Set.of(memberRole);
+
+        User user = userMapper.toEntity(userRequestDTO);
+        user.setRoles(roles);
+
         user = userRepository.save(user);
         return userMapper.toDto(user);
     }
@@ -59,21 +66,29 @@ public class UserService {
     /**
      * Partially update a user.
      *
-     * @param userDTO the entity to update partially.
+     * @param userRequestDTO the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<UserDTO> partialUpdate(UserDTO userDTO) {
-        LOG.debug("Request to partially update User : {}", userDTO);
+    public UserResponseDTO partialUpdate(Long id, UserRequestDTO userRequestDTO) {
+        LOG.debug("Request to partially update User : {}", userRequestDTO);
 
-        return userRepository
-            .findById(userDTO.getId())
-            .map(existingUser -> {
-                userMapper.partialUpdate(existingUser, userDTO);
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        userMapper.partialUpdate(existingUser, userRequestDTO);
 
-                return existingUser;
-            })
-            .map(userRepository::save)
-            .map(userMapper::toDto);
+        User savedUser = userRepository.save(existingUser);
+
+        return userMapper.toDto(savedUser);
+    }
+
+    public UserResponseDTO partialUpdateByEmail(String email, UserRequestDTO userRequestDTO) {
+        LOG.debug("Request to partially update User : {}", userRequestDTO);
+
+        User existingUser = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        userMapper.partialUpdate(existingUser, userRequestDTO);
+
+        User savedUser = userRepository.save(existingUser);
+
+        return userMapper.toDto(savedUser);
     }
 
     /**
@@ -83,7 +98,7 @@ public class UserService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public Page<UserDTO> findAll(Pageable pageable) {
+    public Page<UserResponseDTO> findAll(Pageable pageable) {
         LOG.debug("Request to get all Users");
         return userRepository.findAll(pageable).map(userMapper::toDto);
     }
@@ -93,7 +108,7 @@ public class UserService {
      *
      * @return the list of entities.
      */
-    public Page<UserDTO> findAllWithEagerRelationships(Pageable pageable) {
+    public Page<UserResponseDTO> findAllWithEagerRelationships(Pageable pageable) {
         return userRepository.findAllWithEagerRelationships(pageable).map(userMapper::toDto);
     }
 
@@ -104,7 +119,7 @@ public class UserService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<UserDTO> findOne(Long id) {
+    public Optional<UserResponseDTO> findOne(Long id) {
         LOG.debug("Request to get User : {}", id);
         return userRepository.findOneWithEagerRelationships(id).map(userMapper::toDto);
     }
@@ -116,7 +131,7 @@ public class UserService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<UserDTO> findOneByEmail(String email) {
+    public Optional<UserResponseDTO> findOneByEmail(String email) {
         LOG.debug("Request to get User : {}", email);
         return userRepository.findOneByEmailWithEagerRelationships(email).map(userMapper::toDto);
     }

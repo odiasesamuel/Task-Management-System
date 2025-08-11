@@ -124,7 +124,7 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the teamDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.canAccessTeam(#id, authentication.principal.subject)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.canAccessTeam(#id)")
     public ResponseEntity<TeamResponseDTO> getTeam(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Team : {}", id);
         Optional<TeamResponseDTO> teamDTO = teamService.findOne(id);

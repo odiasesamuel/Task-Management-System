@@ -17,9 +17,9 @@ public class TeamResponseDTO implements Serializable {
     @NotNull
     private String teamName;
 
-    private UserDTO admin;
+    private UserResponseDTO admin;
 
-    private Set<UserDTO> members = new HashSet<>();
+    private Set<UserResponseDTO> members = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -37,19 +37,19 @@ public class TeamResponseDTO implements Serializable {
         this.teamName = teamName;
     }
 
-    public UserDTO getAdmin() {
+    public UserResponseDTO getAdmin() {
         return admin;
     }
 
-    public void setAdmin(UserDTO admin) {
+    public void setAdmin(UserResponseDTO admin) {
         this.admin = admin;
     }
 
-    public Set<UserDTO> getMembers() {
+    public Set<UserResponseDTO> getMembers() {
         return members;
     }
 
-    public void setMembers(Set<UserDTO> members) {
+    public void setMembers(Set<UserResponseDTO> members) {
         this.members = members;
     }
 

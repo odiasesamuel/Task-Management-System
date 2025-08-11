@@ -2,7 +2,8 @@ package com.prunny.user_service.web.rest;
 
 import com.prunny.user_service.repository.UserRepository;
 import com.prunny.user_service.service.UserService;
-import com.prunny.user_service.service.dto.UserDTO;
+import com.prunny.user_service.service.dto.UserRequestDTO;
+import com.prunny.user_service.service.dto.UserResponseDTO;
 import com.prunny.user_service.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -51,106 +52,42 @@ public class UserResource {
     /**
      * {@code POST  /users/internal} : Create a new user, called from the auth service.
      *
-     * @param userDTO the userDTO to create.
+     * @param userRequestDTO the userRequestDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new userDTO, or with status {@code 400 (Bad Request)} if the user has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/internal")
-    public ResponseEntity<UserDTO> createUserInternal(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
-        LOG.debug("REST request to save User : {}", userDTO);
-        if (userDTO.getId() != null) {
-            throw new BadRequestAlertException("A new user cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        userDTO = userService.save(userDTO);
-        return ResponseEntity.created(new URI("/api/users/" + userDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, userDTO.getId().toString()))
-            .body(userDTO);
+    public ResponseEntity<UserResponseDTO> createUserInternal(@Valid @RequestBody UserRequestDTO userRequestDTO) throws URISyntaxException {
+        LOG.debug("REST request to save User : {}", userRequestDTO);
+
+        UserResponseDTO userResponseDTO = userService.save(userRequestDTO);
+        return ResponseEntity.created(new URI("/api/users/internal" + userResponseDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, userResponseDTO.getId().toString()))
+            .body(userResponseDTO);
     }
 
     /**
      * {@code POST  /users} : Create a new user.
      *
-     * @param userDTO the userDTO to create.
+     * @param userRequestDTO the userRequestDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new userDTO, or with status {@code 400 (Bad Request)} if the user has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
-    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
-        LOG.debug("REST request to save User : {}", userDTO);
-        if (userDTO.getId() != null) {
-            throw new BadRequestAlertException("A new user cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        userDTO = userService.save(userDTO);
-        return ResponseEntity.created(new URI("/api/users/" + userDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, userDTO.getId().toString()))
-            .body(userDTO);
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) throws URISyntaxException {
+
+        UserResponseDTO userResponseDTO = userService.save(userRequestDTO);
+        return ResponseEntity.created(new URI("/api/users/internal" + userResponseDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, userResponseDTO.getId().toString()))
+            .body(userResponseDTO);
     }
-
-    /**
-     * {@code PUT  /users/:id} : Updates an existing user.
-     *
-     * @param id the id of the userDTO to save.
-     * @param userDTO the userDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated userDTO,
-     * or with status {@code 400 (Bad Request)} if the userDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the userDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody UserDTO userDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to update User : {}, {}", id, userDTO);
-        if (userDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, userDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!userRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        userDTO = userService.update(userDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userDTO.getId().toString()))
-            .body(userDTO);
-    }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("email/{email}/admin")
-    public ResponseEntity<UserDTO> updateUserByEmail(
-        @PathVariable(value = "email", required = false) final String email,
-        @Valid @RequestBody UserDTO userDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to update User : {}, {}", email, userDTO);
-        if (userDTO.getEmail() == null) {
-            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "email null");
-        }
-        if (!Objects.equals(email, userDTO.getEmail())) {
-            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "email invalid");
-        }
-
-        if (!userRepository.existsByEmail(email)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "email not found");
-        }
-
-        userDTO = userService.update(userDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userDTO.getEmail().toString()))
-            .body(userDTO);
-    }
-
 
     /**
      * {@code PATCH  /users/:id} : Partial updates given fields of an existing user, field will ignore if it is null
      *
      * @param id the id of the userDTO to save.
-     * @param userDTO the userDTO to update.
+     * @param userRequestDTO the userDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated userDTO,
      * or with status {@code 400 (Bad Request)} if the userDTO is not valid,
      * or with status {@code 404 (Not Found)} if the userDTO is not found,
@@ -159,60 +96,33 @@ public class UserResource {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<UserDTO> partialUpdateUser(
+    public ResponseEntity<UserResponseDTO> partialUpdateUser(
         @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody UserDTO userDTO
+        @NotNull @RequestBody UserRequestDTO userRequestDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update User partially : {}, {}", id, userDTO);
-        if (userDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, userDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
+        LOG.debug("REST request to partial update User by email : {}, {}", id, userRequestDTO);
 
-        if (!userRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<UserDTO> result = userService.partialUpdate(userDTO);
+        UserResponseDTO result = userService.partialUpdate(id, userRequestDTO);
 
         return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userDTO.getId().toString())
+            Optional.ofNullable(result),
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, result.getId().toString())
         );
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or #email == authentication.principal.subject")
     @PatchMapping(value = "email/{email}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<UserDTO> partialUpdateUserByEmail(
+    public ResponseEntity<UserResponseDTO> partialUpdateUserByEmail(
         @PathVariable(value = "email", required = false) final String email,
-        @NotNull @RequestBody UserDTO userDTO
+        @NotNull @RequestBody UserRequestDTO userRequestDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update User by email : {}, {}", email, userDTO);
+        LOG.debug("REST request to partial update User by email : {}, {}", email, userRequestDTO);
 
-        if (userDTO.getEmail() == null) {
-            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "emailnull");
-        }
-        if (!Objects.equals(email, userDTO.getEmail())) {
-            throw new BadRequestAlertException("Invalid email", ENTITY_NAME, "emailinvalid");
-        }
-
-        if ((userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) ||
-            (userDTO.getTeams() != null && !userDTO.getTeams().isEmpty())) {
-            throw new BadRequestAlertException("Roles and teams cannot be updated through this endpoint", ENTITY_NAME, "roles_teams_update_forbidden");
-        }
-
-
-        if (!userRepository.existsByEmail(email)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "emailnotfound");
-        }
-
-        Optional<UserDTO> result = userService.partialUpdate(userDTO);
+        UserResponseDTO result = userService.partialUpdateByEmail(email, userRequestDTO);
 
         return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userDTO.getEmail())
+            Optional.ofNullable(result),
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, result.getEmail())
         );
     }
 
@@ -225,12 +135,12 @@ public class UserResource {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
-    public ResponseEntity<List<UserDTO>> getAllUsers(
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
         LOG.debug("REST request to get a page of Users");
-        Page<UserDTO> page;
+        Page<UserResponseDTO> page;
         if (eagerload) {
             page = userService.findAllWithEagerRelationships(pageable);
         } else {
@@ -248,9 +158,9 @@ public class UserResource {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable("id") Long id) {
         LOG.debug("REST request to get User : {}", id);
-        Optional<UserDTO> userDTO = userService.findOne(id);
+        Optional<UserResponseDTO> userDTO = userService.findOne(id);
         return ResponseUtil.wrapOrNotFound(userDTO);
     }
 
@@ -262,9 +172,9 @@ public class UserResource {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN') or #email == authentication.principal.subject")
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
+    public ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable("email") String email) {
         LOG.debug("REST request to get User : {}", email);
-        Optional<UserDTO> userDTO = userService.findOneByEmail(email);
+        Optional<UserResponseDTO> userDTO = userService.findOneByEmail(email);
         return ResponseUtil.wrapOrNotFound(userDTO);
     }
 

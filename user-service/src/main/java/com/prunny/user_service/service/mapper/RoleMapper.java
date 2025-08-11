@@ -3,7 +3,7 @@ package com.prunny.user_service.service.mapper;
 import com.prunny.user_service.domain.Role;
 import com.prunny.user_service.domain.User;
 import com.prunny.user_service.service.dto.RoleDTO;
-import com.prunny.user_service.service.dto.UserDTO;
+import com.prunny.user_service.service.dto.UserResponseDTO;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.*;
@@ -24,10 +24,10 @@ public interface RoleMapper extends EntityMapper<RoleDTO, Role> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
-    UserDTO toDtoUserName(User user);
+    UserResponseDTO toDtoUserName(User user);
 
     @Named("userNameSet")
-    default Set<UserDTO> toDtoUserNameSet(Set<User> user) {
+    default Set<UserResponseDTO> toDtoUserNameSet(Set<User> user) {
         return user.stream().map(this::toDtoUserName).collect(Collectors.toSet());
     }
 }

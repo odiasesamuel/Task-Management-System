@@ -1,11 +1,11 @@
 package com.prunny.user_service.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -19,7 +19,8 @@ public class TeamRequestDTO implements Serializable {
 //    private UserDTO admin;
 //    You should get the adminId from the Spring Security context, not from the request body.
 
-    private Set<Long> memberIds = new HashSet<>();
+    @NotEmpty(message = "At least one member is required")
+    private Set<@NotNull(message = "Member ID cannot be null") Long> memberIds = new HashSet<>();
 
     public String getTeamName() {
         return teamName;

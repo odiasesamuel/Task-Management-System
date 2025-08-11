@@ -10,7 +10,7 @@ import java.util.Set;
  * A DTO for the {@link com.prunny.user_service.domain.User} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class UserDTO implements Serializable {
+public class UserResponseDTO implements Serializable {
 
     private Long id;
 
@@ -89,11 +89,11 @@ public class UserDTO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof UserDTO)) {
+        if (!(o instanceof UserResponseDTO)) {
             return false;
         }
 
-        UserDTO userDTO = (UserDTO) o;
+        UserResponseDTO userDTO = (UserResponseDTO) o;
         if (this.id == null) {
             return false;
         }

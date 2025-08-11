@@ -13,7 +13,7 @@ import com.prunny.user_service.IntegrationTest;
 import com.prunny.user_service.domain.User;
 import com.prunny.user_service.repository.UserRepository;
 import com.prunny.user_service.service.UserService;
-import com.prunny.user_service.service.dto.UserDTO;
+import com.prunny.user_service.service.dto.UserResponseDTO;
 import com.prunny.user_service.service.mapper.UserMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
@@ -132,7 +132,7 @@ class UserResourceIT {
     void createUser() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the User
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
         var returnedUserDTO = om.readValue(
             restUserMockMvc
                 .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
@@ -140,7 +140,7 @@ class UserResourceIT {
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            UserDTO.class
+            UserResponseDTO.class
         );
 
         // Validate the User in the database
@@ -156,7 +156,7 @@ class UserResourceIT {
     void createUserWithExistingId() throws Exception {
         // Create the User with an existing ID
         user.setId(1L);
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
@@ -177,7 +177,7 @@ class UserResourceIT {
         user.setName(null);
 
         // Create the User, which fails.
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         restUserMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
@@ -194,7 +194,7 @@ class UserResourceIT {
         user.setEmail(null);
 
         // Create the User, which fails.
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         restUserMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
@@ -280,7 +280,7 @@ class UserResourceIT {
             .email(UPDATED_EMAIL)
             .phoneNumber(UPDATED_PHONE_NUMBER)
             .profilePictureUrl(UPDATED_PROFILE_PICTURE_URL);
-        UserDTO userDTO = userMapper.toDto(updatedUser);
+        UserResponseDTO userDTO = userMapper.toDto(updatedUser);
 
         restUserMockMvc
             .perform(put(ENTITY_API_URL_ID, userDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
@@ -298,7 +298,7 @@ class UserResourceIT {
         user.setId(longCount.incrementAndGet());
 
         // Create the User
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restUserMockMvc
@@ -316,7 +316,7 @@ class UserResourceIT {
         user.setId(longCount.incrementAndGet());
 
         // Create the User
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restUserMockMvc
@@ -338,7 +338,7 @@ class UserResourceIT {
         user.setId(longCount.incrementAndGet());
 
         // Create the User
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restUserMockMvc
@@ -416,7 +416,7 @@ class UserResourceIT {
         user.setId(longCount.incrementAndGet());
 
         // Create the User
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restUserMockMvc
@@ -436,7 +436,7 @@ class UserResourceIT {
         user.setId(longCount.incrementAndGet());
 
         // Create the User
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restUserMockMvc
@@ -458,7 +458,7 @@ class UserResourceIT {
         user.setId(longCount.incrementAndGet());
 
         // Create the User
-        UserDTO userDTO = userMapper.toDto(user);
+        UserResponseDTO userDTO = userMapper.toDto(user);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restUserMockMvc
