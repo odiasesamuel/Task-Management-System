@@ -2,34 +2,43 @@ package com.prunny.auth_service.service.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public class RegisterRequestDTO {
     @NotBlank(message = "Email is required")
-    @Email(message = "Email should be a valid email address")
+    @Email(message = "Invalid email format")
     private String email;
 
     @NotBlank(message = "Password is required")
+    @Pattern(
+        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
+        message = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number"
+    )
     private String password;
 
     @NotBlank(message = "name is required")
     private String name;
 
     @NotBlank(message = "Phone number is required")
+    @Pattern(
+        regexp = "^(0\\d{10}|\\+\\d{1,15})$",
+        message = "Invalid phone number format (e.g., 08012345678 or +2348012345678)"
+    )
     private String phoneNumber;
 
-    public @NotBlank(message = "Email is required") @Email(message = "Email should be a valid email address") String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public @NotBlank(message = "Password is required") String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public @NotBlank(message = "name is required") String getName() {
+    public String getName() {
         return name;
     }
 
-    public @NotBlank(message = "Phone number is required") String getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 }

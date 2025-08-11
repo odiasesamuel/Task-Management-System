@@ -13,7 +13,6 @@ public class CreateUserRequest {
     private String name;
 
     private String phoneNumber;
-    private String profilePictureUrl;
 
     public CreateUserRequest() {}
 
@@ -32,7 +31,4 @@ public class CreateUserRequest {
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    public String getProfilePictureUrl() { return profilePictureUrl; }
-    public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
 }

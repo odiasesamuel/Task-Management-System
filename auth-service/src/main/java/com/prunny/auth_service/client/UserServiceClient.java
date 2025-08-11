@@ -2,6 +2,7 @@ package com.prunny.auth_service.client;
 
 import com.prunny.auth_service.service.dto.CreateUserRequest;
 import com.prunny.auth_service.service.dto.CreateUserResponse;
+import com.prunny.auth_service.web.rest.errors.UserServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,9 +43,17 @@ public class UserServiceClient {
         } catch (Exception e) {
             logger.error("Error while creating user for auth user {}: {}",
                 userProfile.getEmail(), e.getMessage());
-            CreateUserResponse response = new CreateUserResponse();
-            response.setMessage("Unexpected response from user service");
-            return response;
+            throw new UserServiceException("Failed to create user profile: " + e);
+        }
+    }
+
+    public CreateUserResponse getUserProfile(String email) {
+        String url = userServiceUrl + "/api/users/internal/email/" + email;
+        try {
+            return restTemplate.getForObject(url, CreateUserResponse.class);
+        } catch (Exception e) {
+            logger.error("Failed to fetch roles for user: {}", email);
+            throw new UserServiceException("Failed to fetch profile for user " + email + ":" + e);
         }
     }
 }

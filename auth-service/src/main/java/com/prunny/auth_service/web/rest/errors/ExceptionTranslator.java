@@ -62,6 +62,11 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         this.env = env;
     }
 
+    @ExceptionHandler(UserServiceException.class)
+    public ResponseEntity<ApiResponse> handleUserServiceException (UserServiceException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(ex.getMessage(), null));
+    }
+
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<ApiResponse> handleAlreadyExistsException (AlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(ex.getMessage(), null));

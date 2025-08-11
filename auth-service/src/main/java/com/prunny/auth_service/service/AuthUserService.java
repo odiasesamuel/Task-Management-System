@@ -6,7 +6,10 @@ import com.prunny.auth_service.repository.AuthUserRepository;
 import com.prunny.auth_service.security.TokenService;
 import com.prunny.auth_service.service.dto.*;
 import com.prunny.auth_service.service.mapper.AuthUserMapper;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.prunny.auth_service.web.rest.errors.AlreadyExistsException;
 import org.slf4j.Logger;
@@ -56,11 +59,6 @@ public class AuthUserService {
         authUser.setPassword(passwordEncoder.encode(request.getPassword()));
         authUser = authUserRepository.save(authUser);
 
-        /* Generate Jwt */
-        String authToken = tokenService.generateToken(authUser.getEmail(), authUser.getId());
-
-        JwtResponse jwtResponse = new JwtResponse(authUser.getId(), authUser.getEmail(), authToken);
-
         // Call user service client to create user profile
         CreateUserRequest userProfile = new CreateUserRequest(
             request.getEmail(),
@@ -69,7 +67,14 @@ public class AuthUserService {
         );
         LOG.debug("Sending request to create user profile for: {}", userProfile.getEmail());
 
-        CreateUserResponse profileResponse = userServiceClient.createUserProfile(userProfile);
+        CreateUserResponse profile = userServiceClient.createUserProfile(userProfile);
+
+        List<String> roles = profile.getRoles().stream().map((roleDTO) -> roleDTO.getRoleName()).toList();
+
+        /* Generate Jwt */
+        String authToken = tokenService.generateToken(profile.getEmail(), profile.getId(), roles);
+
+        JwtResponse jwtResponse = new JwtResponse(profile.getId(), profile.getEmail(), authToken);
 
         return jwtResponse;
     }
@@ -81,7 +86,13 @@ public class AuthUserService {
         boolean isPasswordValid = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!isPasswordValid)  throw new BadCredentialsException("Invalid email or password");
 
-        String authToken = tokenService.generateToken(user.getEmail(), user.getId());
+
+        // Call user service client to get user profile
+        CreateUserResponse profile = userServiceClient.getUserProfile(user.getEmail());
+
+        List<String> roles = profile.getRoles().stream().map((roleDTO) -> roleDTO.getRoleName()).toList();
+
+        String authToken = tokenService.generateToken(profile.getEmail(), profile.getId(), roles);
         JwtResponse jwtResponse = new JwtResponse(user.getId(), user.getEmail(), authToken);
 
         return jwtResponse;

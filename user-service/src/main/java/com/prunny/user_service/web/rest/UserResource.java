@@ -4,13 +4,11 @@ import com.prunny.user_service.repository.UserRepository;
 import com.prunny.user_service.service.UserService;
 import com.prunny.user_service.service.dto.UserRequestDTO;
 import com.prunny.user_service.service.dto.UserResponseDTO;
-import com.prunny.user_service.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,6 +171,14 @@ public class UserResource {
     @PreAuthorize("hasRole('ROLE_ADMIN') or #email == authentication.principal.subject")
     @GetMapping("/email/{email}")
     public ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable("email") String email) {
+        LOG.debug("REST request to get User : {}", email);
+        Optional<UserResponseDTO> userDTO = userService.findOneByEmail(email);
+        return ResponseUtil.wrapOrNotFound(userDTO);
+    }
+
+    // Used for Inter-service call from the authentication service to get user's role to generate jwt
+    @GetMapping("internal/email/{email}")
+    public ResponseEntity<UserResponseDTO> getUserByEmailInternal(@PathVariable("email") String email) {
         LOG.debug("REST request to get User : {}", email);
         Optional<UserResponseDTO> userDTO = userService.findOneByEmail(email);
         return ResponseUtil.wrapOrNotFound(userDTO);
