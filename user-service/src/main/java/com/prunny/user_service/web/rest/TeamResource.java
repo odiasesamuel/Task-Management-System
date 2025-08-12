@@ -56,7 +56,7 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new teamDTO, or with status {@code 400 (Bad Request)} if the team has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PostMapping("")
     public ResponseEntity<TeamResponseDTO> createTeam(@Valid @RequestBody TeamRequestDTO teamRequestDTO) throws URISyntaxException {
         LOG.debug("REST request to save Team : {}", teamRequestDTO);
@@ -77,7 +77,7 @@ public class TeamResource {
      * or with status {@code 500 (Internal Server Error)} if the teamDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PutMapping("/{id}")
     public ResponseEntity<TeamResponseDTO> updateTeam(
         @PathVariable(value = "id", required = false) final Long id,
@@ -100,7 +100,7 @@ public class TeamResource {
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of teams in body.
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @GetMapping("")
     public ResponseEntity<List<TeamResponseDTO>> getAllTeams(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
@@ -124,7 +124,7 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the teamDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.canAccessTeam(#id)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @teamService.canAccessTeam(#id)")
     public ResponseEntity<TeamResponseDTO> getTeam(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Team : {}", id);
         Optional<TeamResponseDTO> teamDTO = teamService.findOne(id);
@@ -137,7 +137,7 @@ public class TeamResource {
      * @param id the id of the teamDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Team : {}", id);
