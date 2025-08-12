@@ -79,7 +79,6 @@ public class TeamService {
     public TeamResponseDTO update(Long id, TeamRequestDTO teamRequestDTO) {
         LOG.debug("Request to update Team with id: {} : {}", id, teamRequestDTO);
 
-        // Fetch the existing team
         Team existingTeam = teamRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Team not found with id: " + id));
 
@@ -95,16 +94,13 @@ public class TeamService {
             .flatMap(userRepository::findByEmail)
             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Map member IDs to User entities
         List<User> members = userRepository.findAllById(teamRequestDTO.getMemberIds());
         Set<User> membersSet = new HashSet<>(members);
 
-        // Update the existing team
         existingTeam.setTeamName(teamRequestDTO.getTeamName());
         existingTeam.setMembers(membersSet);
         existingTeam.setAdmin(admin);
 
-        // Save the updated team
         Team savedTeam = teamRepository.save(existingTeam);
         return teamMapper.toDto(savedTeam);
     }
@@ -151,9 +147,7 @@ public class TeamService {
     public void delete(Long id) {
         LOG.debug("Request to delete Team : {}", id);
 
-        if (!teamRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Team not found with id: " + id);
-        }
+        if (!teamRepository.existsById(id)) throw new ResourceNotFoundException("Team not found with id: " + id);
 
         teamRepository.deleteTeamUserRelationships(id);
         teamRepository.deleteById(id);

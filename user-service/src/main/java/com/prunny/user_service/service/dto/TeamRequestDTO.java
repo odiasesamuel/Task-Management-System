@@ -34,7 +34,7 @@ public class TeamRequestDTO implements Serializable {
         return memberIds;
     }
 
-    public void setMembersIds(Set<Long> memberIds) {
+    public void setMemberIds(Set<Long> memberIds) {
         this.memberIds = memberIds;
     }
 

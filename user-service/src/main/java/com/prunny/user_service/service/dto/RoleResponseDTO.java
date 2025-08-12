@@ -10,7 +10,7 @@ import java.util.Set;
  * A DTO for the {@link com.prunny.user_service.domain.Role} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class RoleDTO implements Serializable {
+public class RoleResponseDTO implements Serializable {
 
     private Long id;
 
@@ -48,11 +48,11 @@ public class RoleDTO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof RoleDTO)) {
+        if (!(o instanceof RoleResponseDTO)) {
             return false;
         }
 
-        RoleDTO roleDTO = (RoleDTO) o;
+        RoleResponseDTO roleDTO = (RoleResponseDTO) o;
         if (this.id == null) {
             return false;
         }

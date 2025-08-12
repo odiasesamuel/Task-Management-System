@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -35,4 +36,12 @@ public interface UserRepository extends UserRepositoryWithBagRelationships, JpaR
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    @Modifying
+    @Query(value = "DELETE FROM rel_jhi_user__roles WHERE jhi_user_id = :userId", nativeQuery = true)
+    void deleteUserRoleRelationships(@Param("userId") Long userId);
+
+    @Modifying
+    @Query(value = "DELETE FROM rel_jhi_user__teams WHERE jhi_user_id = :userId", nativeQuery = true)
+    void deleteUserTeamRelationships(@Param("userId") Long userId);
 }

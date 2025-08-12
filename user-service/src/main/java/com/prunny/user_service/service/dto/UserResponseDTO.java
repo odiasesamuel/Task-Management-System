@@ -24,7 +24,7 @@ public class UserResponseDTO implements Serializable {
 
     private String profilePictureUrl;
 
-    private Set<RoleDTO> roles = new HashSet<>();
+    private Set<RoleResponseDTO> roles = new HashSet<>();
 
     private Set<TeamResponseDTO> teams = new HashSet<>();
 
@@ -68,11 +68,11 @@ public class UserResponseDTO implements Serializable {
         this.profilePictureUrl = profilePictureUrl;
     }
 
-    public Set<RoleDTO> getRoles() {
+    public Set<RoleResponseDTO> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<RoleDTO> roles) {
+    public void setRoles(Set<RoleResponseDTO> roles) {
         this.roles = roles;
     }
 

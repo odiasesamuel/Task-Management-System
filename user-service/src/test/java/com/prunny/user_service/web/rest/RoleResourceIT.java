@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prunny.user_service.IntegrationTest;
 import com.prunny.user_service.domain.Role;
 import com.prunny.user_service.repository.RoleRepository;
-import com.prunny.user_service.service.dto.RoleDTO;
+import com.prunny.user_service.service.dto.RoleResponseDTO;
 import com.prunny.user_service.service.mapper.RoleMapper;
 import jakarta.persistence.EntityManager;
 import java.util.Random;
@@ -100,7 +100,7 @@ class RoleResourceIT {
     void createRole() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the Role
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
         var returnedRoleDTO = om.readValue(
             restRoleMockMvc
                 .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(roleDTO)))
@@ -108,7 +108,7 @@ class RoleResourceIT {
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            RoleDTO.class
+            RoleResponseDTO.class
         );
 
         // Validate the Role in the database
@@ -124,7 +124,7 @@ class RoleResourceIT {
     void createRoleWithExistingId() throws Exception {
         // Create the Role with an existing ID
         role.setId(1L);
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
@@ -145,7 +145,7 @@ class RoleResourceIT {
         role.setRoleName(null);
 
         // Create the Role, which fails.
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         restRoleMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(roleDTO)))
@@ -204,7 +204,7 @@ class RoleResourceIT {
         // Disconnect from session so that the updates on updatedRole are not directly saved in db
         em.detach(updatedRole);
         updatedRole.roleName(UPDATED_ROLE_NAME);
-        RoleDTO roleDTO = roleMapper.toDto(updatedRole);
+        RoleResponseDTO roleDTO = roleMapper.toDto(updatedRole);
 
         restRoleMockMvc
             .perform(put(ENTITY_API_URL_ID, roleDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(roleDTO)))
@@ -222,7 +222,7 @@ class RoleResourceIT {
         role.setId(longCount.incrementAndGet());
 
         // Create the Role
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restRoleMockMvc
@@ -240,7 +240,7 @@ class RoleResourceIT {
         role.setId(longCount.incrementAndGet());
 
         // Create the Role
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRoleMockMvc
@@ -262,7 +262,7 @@ class RoleResourceIT {
         role.setId(longCount.incrementAndGet());
 
         // Create the Role
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRoleMockMvc
@@ -334,7 +334,7 @@ class RoleResourceIT {
         role.setId(longCount.incrementAndGet());
 
         // Create the Role
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restRoleMockMvc
@@ -354,7 +354,7 @@ class RoleResourceIT {
         role.setId(longCount.incrementAndGet());
 
         // Create the Role
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRoleMockMvc
@@ -376,7 +376,7 @@ class RoleResourceIT {
         role.setId(longCount.incrementAndGet());
 
         // Create the Role
-        RoleDTO roleDTO = roleMapper.toDto(role);
+        RoleResponseDTO roleDTO = roleMapper.toDto(role);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRoleMockMvc

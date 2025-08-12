@@ -53,7 +53,7 @@ public class UserService {
 
         if (userRepository.existsByEmail(userRequestDTO.getEmail())) throw new AlreadyExistException("Oops"  + userRequestDTO.getEmail() + " already exist!");
 
-        Role memberRole = roleRepository.findById(3L).orElseThrow(() -> new ResourceNotFoundException("Role designated as member does not exist in database therefore user creation failed"));
+        Role memberRole = roleRepository.findByRoleName("MEMBER").orElseThrow(() -> new ResourceNotFoundException("Role designated as member does not exist in database therefore user creation failed"));
         Set<Role> roles = Set.of(memberRole);
 
         User user = userMapper.toEntity(userRequestDTO);
@@ -143,6 +143,10 @@ public class UserService {
      */
     public void delete(Long id) {
         LOG.debug("Request to delete User : {}", id);
+        if (!userRepository.existsById(id)) throw new ResourceNotFoundException("Role not found with id: " + id);
+
+        userRepository.deleteUserTeamRelationships(id);
+        userRepository.deleteUserRoleRelationships(id);
         userRepository.deleteById(id);
     }
 }

@@ -1,10 +1,21 @@
 package com.prunny.user_service.service;
 
 import com.prunny.user_service.domain.Role;
+import com.prunny.user_service.domain.Team;
+import com.prunny.user_service.domain.User;
 import com.prunny.user_service.repository.RoleRepository;
-import com.prunny.user_service.service.dto.RoleDTO;
+import com.prunny.user_service.repository.UserRepository;
+import com.prunny.user_service.service.dto.RoleRequestDTO;
+import com.prunny.user_service.service.dto.RoleResponseDTO;
 import com.prunny.user_service.service.mapper.RoleMapper;
+
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import com.prunny.user_service.web.rest.errors.AlreadyExistException;
+import com.prunny.user_service.web.rest.errors.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -23,22 +34,33 @@ public class RoleService {
 
     private final RoleRepository roleRepository;
 
+    private final UserRepository userRepository;
+
     private final RoleMapper roleMapper;
 
-    public RoleService(RoleRepository roleRepository, RoleMapper roleMapper) {
+    public RoleService(RoleRepository roleRepository, UserRepository userRepository, RoleMapper roleMapper) {
         this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
         this.roleMapper = roleMapper;
     }
 
     /**
      * Save a role.
      *
-     * @param roleDTO the entity to save.
+     * @param roleRequestDTO the entity to save.
      * @return the persisted entity.
      */
-    public RoleDTO save(RoleDTO roleDTO) {
-        LOG.debug("Request to save Role : {}", roleDTO);
-        Role role = roleMapper.toEntity(roleDTO);
+    public RoleResponseDTO save(RoleRequestDTO roleRequestDTO) {
+        LOG.debug("Request to save Role : {}", roleRequestDTO);
+
+        if (roleRepository.existsByRoleName(roleRequestDTO.getRoleName())) throw new AlreadyExistException("Role with this name already exist");
+
+        List<User> users = userRepository.findAllById(roleRequestDTO.getUserIds());
+        Set<User> userSet = new HashSet<>(users);
+
+        Role role = roleMapper.toEntity(roleRequestDTO);
+        role.setUsers(userSet);
+
         role = roleRepository.save(role);
         return roleMapper.toDto(role);
     }
@@ -46,14 +68,30 @@ public class RoleService {
     /**
      * Update a role.
      *
-     * @param roleDTO the entity to save.
+     * @param roleRequestDTO the entity to save.
      * @return the persisted entity.
      */
-    public RoleDTO update(RoleDTO roleDTO) {
-        LOG.debug("Request to update Role : {}", roleDTO);
-        Role role = roleMapper.toEntity(roleDTO);
-        role = roleRepository.save(role);
-        return roleMapper.toDto(role);
+    public RoleResponseDTO update(Long id, RoleRequestDTO roleRequestDTO) {
+        LOG.debug("Request to update Role : {}", roleRequestDTO);
+
+        Role existingRole = roleRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Role not found with id: " + id));
+
+        // Check for duplicate name in OTHER role (not the current one)
+        roleRepository.findByRoleName(roleRequestDTO.getRoleName())
+            .filter(role -> !role.getId().equals(id))
+            .ifPresent(t -> {
+                throw new AlreadyExistException("Role with this name already exists");
+            });
+
+        List<User> users = userRepository.findAllById(roleRequestDTO.getUserIds());
+        Set<User> userSet = new HashSet<>(users);
+
+        existingRole.setRoleName(roleRequestDTO.getRoleName());
+        existingRole.setUsers(userSet);
+
+        Role savedRole = roleRepository.save(existingRole);
+        return roleMapper.toDto(savedRole);
     }
 
     /**
@@ -62,7 +100,7 @@ public class RoleService {
      * @param roleDTO the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<RoleDTO> partialUpdate(RoleDTO roleDTO) {
+    public Optional<RoleResponseDTO> partialUpdate(RoleResponseDTO roleDTO) {
         LOG.debug("Request to partially update Role : {}", roleDTO);
 
         return roleRepository
@@ -83,7 +121,7 @@ public class RoleService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public Page<RoleDTO> findAll(Pageable pageable) {
+    public Page<RoleResponseDTO> findAll(Pageable pageable) {
         LOG.debug("Request to get all Roles");
         return roleRepository.findAll(pageable).map(roleMapper::toDto);
     }
@@ -95,7 +133,7 @@ public class RoleService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<RoleDTO> findOne(Long id) {
+    public Optional<RoleResponseDTO> findOne(Long id) {
         LOG.debug("Request to get Role : {}", id);
         return roleRepository.findById(id).map(roleMapper::toDto);
     }
@@ -107,6 +145,10 @@ public class RoleService {
      */
     public void delete(Long id) {
         LOG.debug("Request to delete Role : {}", id);
+
+        if (!roleRepository.existsById(id)) throw new ResourceNotFoundException("Role not found with id: " + id);
+
+        roleRepository.deleteRoleUserRelationships(id);
         roleRepository.deleteById(id);
     }
 }

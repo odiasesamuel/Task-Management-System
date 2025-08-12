@@ -9,10 +9,10 @@ class RoleDTOTest {
 
     @Test
     void dtoEqualsVerifier() throws Exception {
-        TestUtil.equalsVerifier(RoleDTO.class);
-        RoleDTO roleDTO1 = new RoleDTO();
+        TestUtil.equalsVerifier(RoleResponseDTO.class);
+        RoleResponseDTO roleDTO1 = new RoleResponseDTO();
         roleDTO1.setId(1L);
-        RoleDTO roleDTO2 = new RoleDTO();
+        RoleResponseDTO roleDTO2 = new RoleResponseDTO();
         assertThat(roleDTO1).isNotEqualTo(roleDTO2);
         roleDTO2.setId(roleDTO1.getId());
         assertThat(roleDTO1).isEqualTo(roleDTO2);
