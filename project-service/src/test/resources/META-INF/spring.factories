@@ -1,0 +1,4 @@
+org.springframework.test.context.ContextCustomizerFactory = \
+    com.prunny.project.config.\
+    SqlTestContainersSpringContextCustomizerFactory,com.prunny.project.config.\
+    KafkaTestContainersSpringContextCustomizerFactory
