@@ -17,15 +17,33 @@ eureka:
   client:
     enabled: false
   instance:
-    appname: projectService
-    instanceId: projectService:${spring.application.instance-id:${random.value}}
+    appname: project
+    instanceId: project:${spring.application.instance-id:${random.value}}
 
 spring:
   application:
-    name: projectService
+    name: project
   cloud:
     config:
       enabled: false
+    function:
+      definition: kafkaConsumer;kafkaProducer
+    stream:
+      kafka:
+        binder:
+          replicationFactor: 1
+          auto-create-topics: true
+      bindings:
+        binding-out-0:
+          content-type: text/plain
+          group: project
+        kafkaConsumer-in-0:
+          destination: sse-topic
+          content-type: text/plain
+          group: project
+        kafkaProducer-out-0:
+          content-type: text/plain
+          group: project
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: test
@@ -46,13 +64,13 @@ spring:
           authorities-claim-name: auth
   task:
     execution:
-      thread-name-prefix: project-service-task-
+      thread-name-prefix: project-task-
       pool:
         core-size: 1
         max-size: 50
         queue-capacity: 10000
     scheduling:
-      thread-name-prefix: project-service-scheduling-
+      thread-name-prefix: project-scheduling-
       pool:
         size: 20
   thymeleaf:
@@ -69,9 +87,9 @@ server:
 # ===================================================================
 jhipster:
   clientApp:
-    name: 'projectServiceApp'
+    name: 'projectApp'
   mail:
-    from: projectService@localhost.com
+    from: project@localhost.com
     base-url: http://127.0.0.1:8080
   logging:
     # To test json console appender
@@ -85,7 +103,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 (you can type `echo 'secret-key'|base64` on your command line)
-        base64-secret: Y2RmNzJhNzM5ZmM0YzI1MWQzNTMzMzAyMjViM2ZiNzRjZTRkOTU2YWUzNGRlNTE3MDk0NzVjYmQ3Y2NhODA5Y2I1NGQyODFhZmRjZTAyOGVkMWE5MjBiZDM3NTcxZWVjMGU3YzljZGUyNzJhYmNlMmQ4M2RlZWIxOTdkNjJiOGU=
+        base64-secret: OTEzNmY1NGMwYzVmYTljNjg5YTNlMWU2YWYwODhmNDNiOGNjNjc4MzFkMDAxZDI0ZDQxODM1ZTdjMjljMWI2ZWFkODkyMDJkNWVkMWI3MWY2YjEyNjYwZjM2ODRkMjg1NWRiZTJjNDU4Y2U0Zjc5NGQ1NGM1NmQ3YzFmMzZhZWY=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 86400

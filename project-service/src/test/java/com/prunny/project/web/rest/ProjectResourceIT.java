@@ -20,7 +20,6 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,14 +42,14 @@ class ProjectResourceIT {
     private static final String DEFAULT_PROJECT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_PROJECT_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_DECRIPTION = "AAAAAAAAAA";
-    private static final String UPDATED_DECRIPTION = "BBBBBBBBBB";
+    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
+    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
-    private static final UUID DEFAULT_TEAM_ID = UUID.randomUUID();
-    private static final UUID UPDATED_TEAM_ID = UUID.randomUUID();
+    private static final Long DEFAULT_TEAM_ID = 1L;
+    private static final Long UPDATED_TEAM_ID = 2L;
 
-    private static final UUID DEFAULT_CREATED_BY_USER_ID = UUID.randomUUID();
-    private static final UUID UPDATED_CREATED_BY_USER_ID = UUID.randomUUID();
+    private static final Long DEFAULT_CREATED_BY_USER_ID = 1L;
+    private static final Long UPDATED_CREATED_BY_USER_ID = 2L;
 
     private static final ZonedDateTime DEFAULT_CREATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_CREATED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
@@ -89,7 +88,7 @@ class ProjectResourceIT {
     public static Project createEntity() {
         return new Project()
             .projectName(DEFAULT_PROJECT_NAME)
-            .decription(DEFAULT_DECRIPTION)
+            .description(DEFAULT_DESCRIPTION)
             .teamId(DEFAULT_TEAM_ID)
             .createdByUserId(DEFAULT_CREATED_BY_USER_ID)
             .createdAt(DEFAULT_CREATED_AT);
@@ -104,7 +103,7 @@ class ProjectResourceIT {
     public static Project createUpdatedEntity() {
         return new Project()
             .projectName(UPDATED_PROJECT_NAME)
-            .decription(UPDATED_DECRIPTION)
+            .description(UPDATED_DESCRIPTION)
             .teamId(UPDATED_TEAM_ID)
             .createdByUserId(UPDATED_CREATED_BY_USER_ID)
             .createdAt(UPDATED_CREATED_AT);
@@ -212,9 +211,9 @@ class ProjectResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(project.getId().intValue())))
             .andExpect(jsonPath("$.[*].projectName").value(hasItem(DEFAULT_PROJECT_NAME)))
-            .andExpect(jsonPath("$.[*].decription").value(hasItem(DEFAULT_DECRIPTION)))
-            .andExpect(jsonPath("$.[*].teamId").value(hasItem(DEFAULT_TEAM_ID.toString())))
-            .andExpect(jsonPath("$.[*].createdByUserId").value(hasItem(DEFAULT_CREATED_BY_USER_ID.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].teamId").value(hasItem(DEFAULT_TEAM_ID.intValue())))
+            .andExpect(jsonPath("$.[*].createdByUserId").value(hasItem(DEFAULT_CREATED_BY_USER_ID.intValue())))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))));
     }
 
@@ -231,9 +230,9 @@ class ProjectResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(project.getId().intValue()))
             .andExpect(jsonPath("$.projectName").value(DEFAULT_PROJECT_NAME))
-            .andExpect(jsonPath("$.decription").value(DEFAULT_DECRIPTION))
-            .andExpect(jsonPath("$.teamId").value(DEFAULT_TEAM_ID.toString()))
-            .andExpect(jsonPath("$.createdByUserId").value(DEFAULT_CREATED_BY_USER_ID.toString()))
+            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
+            .andExpect(jsonPath("$.teamId").value(DEFAULT_TEAM_ID.intValue()))
+            .andExpect(jsonPath("$.createdByUserId").value(DEFAULT_CREATED_BY_USER_ID.intValue()))
             .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)));
     }
 
@@ -258,7 +257,7 @@ class ProjectResourceIT {
         em.detach(updatedProject);
         updatedProject
             .projectName(UPDATED_PROJECT_NAME)
-            .decription(UPDATED_DECRIPTION)
+            .description(UPDATED_DESCRIPTION)
             .teamId(UPDATED_TEAM_ID)
             .createdByUserId(UPDATED_CREATED_BY_USER_ID)
             .createdAt(UPDATED_CREATED_AT);
@@ -347,7 +346,7 @@ class ProjectResourceIT {
         Project partialUpdatedProject = new Project();
         partialUpdatedProject.setId(project.getId());
 
-        partialUpdatedProject.projectName(UPDATED_PROJECT_NAME).decription(UPDATED_DECRIPTION).createdByUserId(UPDATED_CREATED_BY_USER_ID);
+        partialUpdatedProject.description(UPDATED_DESCRIPTION).teamId(UPDATED_TEAM_ID).createdAt(UPDATED_CREATED_AT);
 
         restProjectMockMvc
             .perform(
@@ -377,7 +376,7 @@ class ProjectResourceIT {
 
         partialUpdatedProject
             .projectName(UPDATED_PROJECT_NAME)
-            .decription(UPDATED_DECRIPTION)
+            .description(UPDATED_DESCRIPTION)
             .teamId(UPDATED_TEAM_ID)
             .createdByUserId(UPDATED_CREATED_BY_USER_ID)
             .createdAt(UPDATED_CREATED_AT);

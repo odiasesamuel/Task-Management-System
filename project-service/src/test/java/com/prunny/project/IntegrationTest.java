@@ -1,6 +1,7 @@
 package com.prunny.project;
 
 import com.prunny.project.config.AsyncSyncConfiguration;
+import com.prunny.project.config.EmbeddedKafka;
 import com.prunny.project.config.EmbeddedSQL;
 import com.prunny.project.config.JacksonConfiguration;
 import java.lang.annotation.ElementType;
@@ -14,7 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@SpringBootTest(classes = { ProjectServiceApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class })
+@SpringBootTest(classes = { ProjectApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class })
 @EmbeddedSQL
+@EmbeddedKafka
 public @interface IntegrationTest {
 }

@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * A DTO for the {@link com.prunny.project.domain.Project} entity.
@@ -15,14 +14,15 @@ public class ProjectDTO implements Serializable {
     private Long id;
 
     @NotNull
+    @Size(min = 2)
     private String projectName;
 
-    private String decription;
+    private String description;
 
-    private UUID teamId;
+    private Long teamId;
 
     @NotNull
-    private UUID createdByUserId;
+    private Long createdByUserId;
 
     private ZonedDateTime createdAt;
 
@@ -42,27 +42,27 @@ public class ProjectDTO implements Serializable {
         this.projectName = projectName;
     }
 
-    public String getDecription() {
-        return decription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDecription(String decription) {
-        this.decription = decription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public UUID getTeamId() {
+    public Long getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(UUID teamId) {
+    public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
 
-    public UUID getCreatedByUserId() {
+    public Long getCreatedByUserId() {
         return createdByUserId;
     }
 
-    public void setCreatedByUserId(UUID createdByUserId) {
+    public void setCreatedByUserId(Long createdByUserId) {
         this.createdByUserId = createdByUserId;
     }
 
@@ -101,9 +101,9 @@ public class ProjectDTO implements Serializable {
         return "ProjectDTO{" +
             "id=" + getId() +
             ", projectName='" + getProjectName() + "'" +
-            ", decription='" + getDecription() + "'" +
-            ", teamId='" + getTeamId() + "'" +
-            ", createdByUserId='" + getCreatedByUserId() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", teamId=" + getTeamId() +
+            ", createdByUserId=" + getCreatedByUserId() +
             ", createdAt='" + getCreatedAt() + "'" +
             "}";
     }

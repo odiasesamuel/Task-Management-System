@@ -1,7 +1,7 @@
-package com.prunny.project;
+package com.prunny.reportingservice;
 
-import com.prunny.project.config.ApplicationProperties;
-import com.prunny.project.config.CRLFLogConverter;
+import com.prunny.reportingservice.config.ApplicationProperties;
+import com.prunny.reportingservice.config.CRLFLogConverter;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -15,29 +15,26 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
-public class ProjectServiceApp {
+public class ReportingserviceApp {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProjectServiceApp.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReportingserviceApp.class);
 
     private final Environment env;
 
-    public ProjectServiceApp(Environment env) {
+    public ReportingserviceApp(Environment env) {
         this.env = env;
     }
 
-    /**
-     * Initializes projectService.
-     * <p>
-     * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
-     * <p>
-     * You can find more information on how profiles work with JHipster on <a href="https://www.jhipster.tech/profiles/">https://www.jhipster.tech/profiles/</a>.
-     */
     @PostConstruct
     public void initApplication() {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
@@ -58,12 +55,11 @@ public class ProjectServiceApp {
             );
         }
     }
-
-    /**
-     * Main method, used to run the application.
-     *
-     * @param args the command line arguments.
-     */
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
     public static void main(String[] args) {
         try {
             // Workaround Hazelcast issue: https://github.com/hazelcast/hazelcast/issues/26361#issuecomment-2489778475
@@ -80,7 +76,7 @@ public class ProjectServiceApp {
             // Devtools not found, ignore
         }
 
-        SpringApplication app = new SpringApplication(ProjectServiceApp.class);
+        SpringApplication app = new SpringApplication(ReportingserviceApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);

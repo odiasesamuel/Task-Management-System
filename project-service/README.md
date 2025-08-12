@@ -1,4 +1,4 @@
-# projectService
+# project
 
 This application was generated using JHipster 8.11.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.11.0](https://www.jhipster.tech/documentation-archive/v8.11.0).
 
@@ -35,7 +35,7 @@ For further instructions on how to develop with JHipster, have a look at [Using 
 
 ### Packaging as jar
 
-To build the final jar and optimize the projectService application for production, run:
+To build the final jar and optimize the project application for production, run:
 
 ```
 ./mvnw -Pprod clean verify

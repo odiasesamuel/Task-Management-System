@@ -49,7 +49,7 @@ public class ProjectAsserts {
         assertThat(actual)
             .as("Verify Project relevant properties")
             .satisfies(a -> assertThat(a.getProjectName()).as("check projectName").isEqualTo(expected.getProjectName()))
-            .satisfies(a -> assertThat(a.getDecription()).as("check decription").isEqualTo(expected.getDecription()))
+            .satisfies(a -> assertThat(a.getDescription()).as("check description").isEqualTo(expected.getDescription()))
             .satisfies(a -> assertThat(a.getTeamId()).as("check teamId").isEqualTo(expected.getTeamId()))
             .satisfies(a -> assertThat(a.getCreatedByUserId()).as("check createdByUserId").isEqualTo(expected.getCreatedByUserId()))
             .satisfies(a ->

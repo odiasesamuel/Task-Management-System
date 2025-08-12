@@ -1,0 +1,129 @@
+package com.prunny.task.service.dto;
+
+import com.prunny.task.domain.enumeration.PriorityLevel;
+import com.prunny.task.domain.enumeration.TaskStatus;
+import jakarta.validation.constraints.*;
+import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.Objects;
+
+@SuppressWarnings("common-java:DuplicatedBlocks")
+public class TaskReq implements Serializable {
+
+    private Long id;
+
+    @NotNull
+    private Long projectId;
+
+    @NotNull
+    private String title;
+
+    private String description;
+
+    private Long assignedToUserId;
+
+    private ZonedDateTime dueDate;
+
+    private PriorityLevel priority;
+
+    private TaskStatus status;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getAssignedToUserId() {
+        return assignedToUserId;
+    }
+
+    public void setAssignedToUserId(Long assignedToUserId) {
+        this.assignedToUserId = assignedToUserId;
+    }
+
+    public ZonedDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(ZonedDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public PriorityLevel getPriority() {
+        return priority;
+    }
+
+    public void setPriority(PriorityLevel priority) {
+        this.priority = priority;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TaskReq taskDTO)) {
+            return false;
+        }
+
+        if (this.id == null) {
+            return false;
+        }
+        return Objects.equals(this.id, taskDTO.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
+    // prettier-ignore
+    @Override
+    public String toString() {
+        return "TaskDTO{" +
+            "id=" + getId() +
+            ", projectId=" + getProjectId() +
+            ", title='" + getTitle() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", assignedToUserId=" + getAssignedToUserId() +
+            ", dueDate='" + getDueDate() + "'" +
+            ", priority='" + getPriority() + "'" +
+            ", status='" + getStatus() + "'" +
+            "}";
+    }
+}

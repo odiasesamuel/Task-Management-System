@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/java
 {
-  "name": "ProjectService",
+  "name": "Project",
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
@@ -30,7 +30,7 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [8084],
+  "forwardPorts": [8085],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "java -version",

@@ -28,7 +28,7 @@
 # - In Consul mode, the ports are in the consul.yml file.
 # - In Eureka mode, the ports are in the jhipster-registry.yml file.
 
-name: projectservice
+name: project
 services:
   jhipster-control-center:
     image: 'jhipster/jhipster-control-center:v0.5.0'
@@ -42,7 +42,7 @@ services:
       - SPRING_PROFILES_ACTIVE=prod,api-docs,none
       - SPRING_SECURITY_USER_PASSWORD=admin
       # The token should have the same value than the one declared in you Spring configuration under the jhipster.security.authentication.jwt.base64-secret configuration's entry
-      - JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET=Y2RmNzJhNzM5ZmM0YzI1MWQzNTMzMzAyMjViM2ZiNzRjZTRkOTU2YWUzNGRlNTE3MDk0NzVjYmQ3Y2NhODA5Y2I1NGQyODFhZmRjZTAyOGVkMWE5MjBiZDM3NTcxZWVjMGU3YzljZGUyNzJhYmNlMmQ4M2RlZWIxOTdkNjJiOGU=
+      - JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET=OTEzNmY1NGMwYzVmYTljNjg5YTNlMWU2YWYwODhmNDNiOGNjNjc4MzFkMDAxZDI0ZDQxODM1ZTdjMjljMWI2ZWFkODkyMDJkNWVkMWI3MWY2YjEyNjYwZjM2ODRkMjg1NWRiZTJjNDU4Y2U0Zjc5NGQ1NGM1NmQ3YzFmMzZhZWY=
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@host.docker.internal:8761/eureka/
       - LOGGING_FILE_NAME=/tmp/jhipster-control-center.log
     # If you want to expose these ports outside your dev PC,

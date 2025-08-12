@@ -4,9 +4,13 @@ import com.prunny.project.domain.Project;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Spring Data JPA repository for the Project entity.
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ProjectRepository extends JpaRepository<Project, Long> {}
+public interface ProjectRepository extends JpaRepository<Project, Long> {
+    List<Project> findByTeamId(Long teamId);
+}

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.UUID;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -20,30 +19,35 @@ public class Project implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
 
     @NotNull
+    @Size(min = 2)
     @Column(name = "project_name", nullable = false)
     private String projectName;
 
-    @Column(name = "decription")
-    private String decription;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "team_id")
-    private UUID teamId;
+    private Long teamId;
 
     @NotNull
     @Column(name = "created_by_user_id", nullable = false)
-    private UUID createdByUserId;
+    private Long createdByUserId;
 
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = ZonedDateTime.now();
+    }
     public Long getId() {
         return this.id;
     }
@@ -70,42 +74,42 @@ public class Project implements Serializable {
         this.projectName = projectName;
     }
 
-    public String getDecription() {
-        return this.decription;
+    public String getDescription() {
+        return this.description;
     }
 
-    public Project decription(String decription) {
-        this.setDecription(decription);
+    public Project description(String description) {
+        this.setDescription(description);
         return this;
     }
 
-    public void setDecription(String decription) {
-        this.decription = decription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public UUID getTeamId() {
+    public Long getTeamId() {
         return this.teamId;
     }
 
-    public Project teamId(UUID teamId) {
+    public Project teamId(Long teamId) {
         this.setTeamId(teamId);
         return this;
     }
 
-    public void setTeamId(UUID teamId) {
+    public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
 
-    public UUID getCreatedByUserId() {
+    public Long getCreatedByUserId() {
         return this.createdByUserId;
     }
 
-    public Project createdByUserId(UUID createdByUserId) {
+    public Project createdByUserId(Long createdByUserId) {
         this.setCreatedByUserId(createdByUserId);
         return this;
     }
 
-    public void setCreatedByUserId(UUID createdByUserId) {
+    public void setCreatedByUserId(Long createdByUserId) {
         this.createdByUserId = createdByUserId;
     }
 
@@ -147,9 +151,9 @@ public class Project implements Serializable {
         return "Project{" +
             "id=" + getId() +
             ", projectName='" + getProjectName() + "'" +
-            ", decription='" + getDecription() + "'" +
-            ", teamId='" + getTeamId() + "'" +
-            ", createdByUserId='" + getCreatedByUserId() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", teamId=" + getTeamId() +
+            ", createdByUserId=" + getCreatedByUserId() +
             ", createdAt='" + getCreatedAt() + "'" +
             "}";
     }
