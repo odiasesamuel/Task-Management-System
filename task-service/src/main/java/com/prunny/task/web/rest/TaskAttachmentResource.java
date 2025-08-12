@@ -50,18 +50,6 @@ public class TaskAttachmentResource {
 
 
     @PostMapping("/{taskId}/attachments")
-//    public ResponseEntity<TaskAttachmentDTO> createTaskAttachment(@PathVariable(value = "taskId", required = false) final Long taskId,@Valid @RequestBody TaskAttachmentReq taskAttachmentReq)
-//        throws URISyntaxException {
-//        LOG.debug("REST request to save TaskAttachment : {}", taskAttachmentReq);
-//        if (taskAttachmentReq.getId() != null) {
-//            throw new BadRequestAlertException("A new taskAttachment cannot already have an ID", ENTITY_NAME, "idexists");
-//        }
-//        TaskAttachmentDTO taskAttachmentDTO = taskAttachmentService.save(taskAttachmentReq,taskId);
-//        return ResponseEntity.created(new URI("/api/task-attachments/" + taskAttachmentDTO.getId()))
-//            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, taskAttachmentDTO.getId().toString()))
-//            .body(taskAttachmentDTO);
-//    }
-
     public ResponseEntity<TaskAttachmentDTO> uploadAttachment(
         @PathVariable Long taskId,
         @RequestParam("file") MultipartFile file) {

@@ -23,6 +23,7 @@ public class ProjectReq implements Serializable {
 
     @NotNull
     private Long createdByUserId;
+    // Remove later to be gotten from spring security context
 
     public Long getId() {
         return id;

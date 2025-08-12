@@ -18,6 +18,7 @@ public class TaskCommentReq implements Serializable {
 
     @NotNull
     private Long user_id;
+    // Get this user Id from spring security context and not body of the request
 
 
 
