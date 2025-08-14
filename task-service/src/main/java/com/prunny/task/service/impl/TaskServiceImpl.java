@@ -67,9 +67,6 @@ public class TaskServiceImpl implements TaskService {
             task.getDueDate()
         );
         return taskMapper.toDto(task);
-
-
-
     }
 
     @Override

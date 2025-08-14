@@ -16,16 +16,14 @@ public class NotificationServiceImpl {
 
     private final UserServiceClient userClient;
     private final TaskServiceClient taskServiceClient;
-//    private final T taskClient;
 
     public NotificationServiceImpl(UserServiceClient userClient, TaskServiceClient taskServiceClient) {
         this.userClient = userClient;
-//        this.taskClient = taskClient;
         this.taskServiceClient = taskServiceClient;
     }
 
     public TaskNotificationDTO onTaskAssigned(Map<String, Object> payload) {
-        Long userId = ((Number) payload.get("assignedToUserId")).longValue(); //get the assigned user id from payload
+        Long userId = ((Number) payload.get("assignedToUserId")).longValue();
         Long taskId = ((Number) payload.get("taskId")).longValue();
         String title = (String) payload.get("title");
         String dateTimeString = (String) payload.get("dueDate");
@@ -33,11 +31,12 @@ public class NotificationServiceImpl {
 
 
         var user = userClient.getCurrentUser(userId);
-//        var task = taskClient.getTask(taskId);
 
         System.out.println("📢 Task Assigned Event Received");
         System.out.println("User: " + user);
-        return new TaskNotificationDTO(taskId,title,user.getEmail(),dueDate);
+        TaskNotificationDTO taskNotificationDTO = new TaskNotificationDTO(taskId,title,user.getEmail(),dueDate);
+        System.out.println("Task Notification: " + taskNotificationDTO.toString());
+        return taskNotificationDTO;
     }
 
     public TaskCommentNoitificationDTO onTaskCommented(Map<String, Object> payload) {
@@ -47,11 +46,12 @@ public class NotificationServiceImpl {
         String dateTimeString = (String) payload.get("commentedAt");
         ZonedDateTime commentedAt = ZonedDateTime.parse(dateTimeString);
 
-        var user = userClient.getCurrentUser(commenterId);
+
         var task = taskServiceClient.getTask(taskId);
+        var user = userClient.getCurrentUser(task.getAssignedToUserId());
 
         System.out.println("💬 Task Commented Event Received");
-        System.out.println("Commenter: " + user);
+        System.out.println("Task Assigned User Details" + user);
         return new TaskCommentNoitificationDTO(user.getEmail(),task.getTitle(),comment,commentedAt);
 
     }

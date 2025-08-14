@@ -19,7 +19,7 @@ public class UserServiceClient {
     }
 
     public UserResponseDTO getCurrentUser(Long userId) {
-        String API_URL = "http://userservice/api/user/" +userId;
+        String API_URL = "http://userservice/api/users/" +userId;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getCurrentToken());
