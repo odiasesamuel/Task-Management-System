@@ -157,4 +157,10 @@ public class ProjectResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    @GetMapping("/{projectId}/can-access")
+    public ResponseEntity<Boolean> canAccessProject(@PathVariable("projectId") Long projectId) {
+        boolean canAccess = projectService.canAccessProject(projectId);
+        return ResponseEntity.ok(canAccess);
+    }
 }

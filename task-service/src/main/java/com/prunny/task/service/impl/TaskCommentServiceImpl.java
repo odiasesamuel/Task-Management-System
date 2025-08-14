@@ -3,6 +3,7 @@ package com.prunny.task.service.impl;
 import com.prunny.task.domain.Task;
 import com.prunny.task.domain.TaskComment;
 import com.prunny.task.repository.TaskCommentRepository;
+import com.prunny.task.security.SecurityUtils;
 import com.prunny.task.service.TaskCommentService;
 import com.prunny.task.service.dto.TaskCommentDTO;
 import com.prunny.task.service.dto.TaskCommentReq;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +42,13 @@ public class TaskCommentServiceImpl implements TaskCommentService {
     @Override
     public TaskCommentDTO save(TaskCommentReq taskCommentReq,Long taskId) {
         LOG.debug("Request to save TaskComment : {}", taskCommentReq);
+        Long userId = SecurityUtils.getCurrentUserId().orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         Task task = new Task();
         task.setId(taskId);
         TaskComment taskComment = taskCommentMapper.toEntity(taskCommentReq);
         taskComment.setTask(task);
+        taskComment.setUser_id(userId);
         taskComment = taskCommentRepository.save(taskComment);
         return taskCommentMapper.toDto(taskComment);
     }

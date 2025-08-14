@@ -149,7 +149,6 @@ public class TeamResource {
 
     @GetMapping("/{teamId}/can-access")
     public ResponseEntity<Boolean> canAccessTeam(@PathVariable("teamId") Long teamId) {
-        // If we reach here, the user has access (PreAuthorize passed)
         boolean canAccess = teamService.canAccessTeam(teamId);
         return ResponseEntity.ok(canAccess);
     }

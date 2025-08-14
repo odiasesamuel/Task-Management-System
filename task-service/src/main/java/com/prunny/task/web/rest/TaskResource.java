@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -46,6 +47,7 @@ public class TaskResource {
         this.taskRepository = taskRepository;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PostMapping("")
     public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskReq taskReq) throws URISyntaxException {
         LOG.debug("REST request to save Task : {}", taskReq);
@@ -58,9 +60,7 @@ public class TaskResource {
             .body(taskDTO);
     }
 
-
-
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PutMapping("/{id}")
     public ResponseEntity<TaskDTO> updateTask(
         @PathVariable(value = "id", required = false) final Long id,
@@ -84,7 +84,7 @@ public class TaskResource {
             .body(taskDTO);
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<TaskDTO> partialUpdateTask(
         @PathVariable(value = "id", required = false) final Long id,
@@ -110,7 +110,7 @@ public class TaskResource {
         );
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @GetMapping("")
     public ResponseEntity<List<TaskDTO>> getAllTasks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of Tasks");
@@ -119,7 +119,7 @@ public class TaskResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskServiceImpl.canAccessProject(#projectId)")
     @GetMapping("/{id}")
     public ResponseEntity<TaskDTO> getTask(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Task : {}", id);
@@ -127,6 +127,7 @@ public class TaskResource {
         return ResponseUtil.wrapOrNotFound(taskDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskServiceImpl.canAccessProject(#projectId)")
     @GetMapping("/{projectId}/tasks")
     public ResponseEntity<List<TaskDTO>> getProjectTask(@PathVariable("projectId") Long projectId) {
         LOG.debug("REST request to get Task : {}", projectId);
@@ -135,6 +136,7 @@ public class TaskResource {
     }
 
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Task : {}", id);

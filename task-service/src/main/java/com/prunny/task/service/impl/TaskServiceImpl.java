@@ -3,6 +3,7 @@ package com.prunny.task.service.impl;
 import com.prunny.task.client.ProjectServiceClient;
 import com.prunny.task.domain.Task;
 import com.prunny.task.repository.TaskRepository;
+import com.prunny.task.security.SecurityUtils;
 import com.prunny.task.service.TaskService;
 import com.prunny.task.service.dto.ProjectDTO;
 import com.prunny.task.service.dto.TaskDTO;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,5 +110,14 @@ public class TaskServiceImpl implements TaskService {
     public void delete(Long id) {
         LOG.debug("Request to delete Task : {}", id);
         taskRepository.deleteById(id);
+    }
+
+    /**
+     * Check if the current user can access the specified project
+     * Used by @PreAuthorize annotation
+     */
+    public boolean canAccessProject(Long projectId) {
+        LOG.debug("Checking access to project: {}", projectId);
+        return projectServiceClient.canAccessProject(projectId);
     }
 }
