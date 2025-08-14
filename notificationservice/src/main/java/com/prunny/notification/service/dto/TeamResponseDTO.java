@@ -1,0 +1,86 @@
+package com.prunny.notification.service.dto;
+
+
+import jakarta.validation.constraints.NotNull;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+@SuppressWarnings("common-java:DuplicatedBlocks")
+public class TeamResponseDTO implements Serializable {
+
+    private Long id;
+
+    @NotNull
+    private String teamName;
+
+    private UserResponseDTO admin;
+
+    private Set<UserResponseDTO> members = new HashSet<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public UserResponseDTO getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(UserResponseDTO admin) {
+        this.admin = admin;
+    }
+
+    public Set<UserResponseDTO> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<UserResponseDTO> members) {
+        this.members = members;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TeamResponseDTO)) {
+            return false;
+        }
+
+        TeamResponseDTO teamDTO = (TeamResponseDTO) o;
+        if (this.id == null) {
+            return false;
+        }
+        return Objects.equals(this.id, teamDTO.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
+    // prettier-ignore
+    @Override
+    public String toString() {
+        return "TeamDTO{" +
+            "id=" + getId() +
+            ", teamName='" + getTeamName() + "'" +
+            ", admin=" + getAdmin() +
+            ", members=" + getMembers() +
+            "}";
+    }
+}

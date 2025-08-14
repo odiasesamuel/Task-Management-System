@@ -1,5 +1,6 @@
 package com.prunny.task.service.impl;
 
+import com.prunny.task.client.NotificationClient;
 import com.prunny.task.domain.Task;
 import com.prunny.task.domain.TaskComment;
 import com.prunny.task.repository.TaskCommentRepository;
@@ -8,6 +9,7 @@ import com.prunny.task.service.dto.TaskCommentDTO;
 import com.prunny.task.service.dto.TaskCommentReq;
 import com.prunny.task.service.mapper.TaskCommentMapper;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,10 +33,12 @@ public class TaskCommentServiceImpl implements TaskCommentService {
     private final TaskCommentRepository taskCommentRepository;
 
     private final TaskCommentMapper taskCommentMapper;
+    private final NotificationClient notificationClient;
 
-    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskCommentMapper taskCommentMapper) {
+    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskCommentMapper taskCommentMapper, NotificationClient notificationClient) {
         this.taskCommentRepository = taskCommentRepository;
         this.taskCommentMapper = taskCommentMapper;
+        this.notificationClient = notificationClient;
     }
 
     @Override
@@ -45,6 +49,13 @@ public class TaskCommentServiceImpl implements TaskCommentService {
         TaskComment taskComment = taskCommentMapper.toEntity(taskCommentReq);
         taskComment.setTask(task);
         taskComment = taskCommentRepository.save(taskComment);
+        notificationClient.sendTaskCommented(
+            taskComment.getTask().getId(),
+            taskComment.getUser_id(),
+            taskCommentReq.getComment(),
+            ZonedDateTime.now()
+        );
+
         return taskCommentMapper.toDto(taskComment);
     }
 

@@ -1,5 +1,6 @@
 package com.prunny.task.service.impl;
 
+import com.prunny.task.client.NotificationClient;
 import com.prunny.task.client.ProjectServiceClient;
 import com.prunny.task.domain.Task;
 import com.prunny.task.repository.TaskRepository;
@@ -33,11 +34,13 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskMapper taskMapper;
     private final ProjectServiceClient projectServiceClient;
+    private final NotificationClient notificationClient;
 
-    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, ProjectServiceClient projectServiceClient) {
+    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, ProjectServiceClient projectServiceClient, NotificationClient notificationClient) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
         this.projectServiceClient = projectServiceClient;
+        this.notificationClient = notificationClient;
     }
 
     @Override
@@ -55,6 +58,12 @@ public class TaskServiceImpl implements TaskService {
         }
         Task task = taskMapper.toEntity(taskReq);
         task = taskRepository.save(task);
+        notificationClient.sendTaskAssigned(
+            task.getId(),
+            task.getTitle(),
+            task.getAssignedToUserId(),
+            task.getDueDate()
+        );
         return taskMapper.toDto(task);
 
 

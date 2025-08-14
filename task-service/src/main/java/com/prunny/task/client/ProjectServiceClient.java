@@ -6,11 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 import java.util.Optional;
 
 
@@ -29,18 +26,6 @@ public class ProjectServiceClient {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getCurrentToken());
         HttpEntity<Void> entity = new HttpEntity<>(headers);
-//        ParameterizedTypeReference<Optional<ProjectDTO>> responseType =
-//            new ParameterizedTypeReference<Optional<ProjectDTO>>() {};
-//
-//
-//        ResponseEntity<Optional<ProjectDTO>> response = restTemplate.exchange(
-//            API_URL,
-//            HttpMethod.GET,
-//            entity,
-//            responseType
-//        );
-//
-//        return response.getBody();
         try {
             ResponseEntity<ProjectDTO> response = restTemplate.exchange(
                 API_URL,
@@ -51,7 +36,7 @@ public class ProjectServiceClient {
             return Optional.ofNullable(response.getBody());
 
         } catch (HttpClientErrorException.NotFound ex) {
-            // Project not found → return empty
+
             return Optional.empty();
         }
     }
