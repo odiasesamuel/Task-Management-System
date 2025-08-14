@@ -93,9 +93,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskDTO> getUserTasks(){
+    public List<TaskDTO> getUserProjectTask(Long projectId) {
         Long userId = SecurityUtils.getCurrentUserId().orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        List<Task> tasks= taskRepository.findByAssignedToUserId(userId);
+        List<Task> tasks= taskRepository.findByProjectIdAndAssignedToUserId(projectId, userId);
         return tasks.stream().map(taskMapper::toDto).toList();
     }
 

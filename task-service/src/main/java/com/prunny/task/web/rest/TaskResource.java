@@ -135,9 +135,9 @@ public class TaskResource {
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(taskDTO));
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<TaskDTO>> getUserTask() {
-        List<TaskDTO> taskDTO = taskService.getUserTasks();
+    @GetMapping("/{projectId}/tasks/user")
+    public ResponseEntity<List<TaskDTO>> getUserProjectTask(@PathVariable("projectId") Long projectId) {
+        List<TaskDTO> taskDTO = taskService.getUserProjectTask(projectId);
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(taskDTO));
     }
 
