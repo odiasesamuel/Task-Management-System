@@ -82,6 +82,57 @@ The system implements a hierarchical role-based access control system with three
 - **Build Tool**: Maven
 - **Framework**: JHipster
 
+## 🚀 Getting Started
+
+### Prerequisites
+* Java 11 or higher
+* Maven 3.6+
+* PostgreSQL
+* Node.js (for frontend dependencies)
+
+### Installation
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/odiasesamuel/Task-Management-System
+    cd Task-Management-System
+    ```
+2.  **Start API Gateway:**
+    ```bash
+    cd gateway
+    mvn spring-boot:run
+    ```
+
+3.  **Start Individual Services:**
+    ```bash
+    # Authentication Service
+    cd auth-service
+    mvn spring-boot:run
+    
+    # User Service
+    cd user-service
+    mvn spring-boot:run
+    
+    # Project Service
+    cd project-service
+    mvn spring-boot:run
+    
+    # Task Service
+    cd task-service
+    mvn spring-boot:run
+    
+    # Notification Service
+    cd notification-service
+    mvn spring-boot:run
+    
+    # Reporting Service
+    cd reporting-service
+    mvn spring-boot:run
+    ```
+
+### Access the Application
+* **API Gateway:** `http://localhost:8765`
+* **Service Discovery Dashboard:** `http://localhost:8761`
+
 ## 📊 Database Design, API Endpoints
 
 ### Authentication Service
@@ -321,60 +372,9 @@ The Task Management service sends an event to the Notifications service when a t
 #### Collaboration Notifications
 The Task Management service sends an event to the Notifications service whenever a comment is added to a task. The event payload would include the task_id, comment and the user_id of the commenter. The Notifications service would then notify all other users involved in that task.
 
-## 🚀 Getting Started
+## 📝 Usage
 
-### Prerequisites
-* Java 11 or higher
-* Maven 3.6+
-* PostgreSQL
-* Node.js (for frontend dependencies)
-
-### Installation
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/odiasesamuel/Task-Management-System
-    cd Task-Management-System
-    ```
-2.  **Start API Gateway:**
-    ```bash
-    cd gateway
-    mvn spring-boot:run
-    ```
-
-3.  **Start Individual Services:**
-    ```bash
-    # Authentication Service
-    cd auth-service
-    mvn spring-boot:run
-    
-    # User Service
-    cd user-service
-    mvn spring-boot:run
-    
-    # Project Service
-    cd project-service
-    mvn spring-boot:run
-    
-    # Task Service
-    cd task-service
-    mvn spring-boot:run
-    
-    # Notification Service
-    cd notification-service
-    mvn spring-boot:run
-    
-    # Reporting Service
-    cd reporting-service
-    mvn spring-boot:run
-    ```
-
-### Access the Application
-* **API Gateway:** `http://localhost:8765`
-* **Service Discovery Dashboard:** `http://localhost:8761`
-
-### 📝 Usage
-
-#### Creating Your First Project
+### Creating Your First Project
 1. **Register/Login** as an Admin or Team Lead  
 2. **Create a Team** with team members  
 3. **Create a Project** and assign it to the team  
@@ -382,7 +382,7 @@ The Task Management service sends an event to the Notifications service whenever
 5. **Assign Tasks** to team members  
 6. **Generate Reports** to track performance  
 
-## Team Member Workflow
+### Team Member Workflow
 
 1. **Login** to your account  
 2. **View Assigned Tasks** on your profile  
