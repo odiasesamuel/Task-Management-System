@@ -5,6 +5,7 @@ import com.prunny.task.domain.Task;
 import com.prunny.task.domain.TaskAttachment;
 import com.prunny.task.repository.TaskAttachmentRepository;
 import com.prunny.task.repository.TaskRepository;
+import com.prunny.task.security.SecurityUtils;
 import com.prunny.task.service.TaskAttachmentService;
 import com.prunny.task.service.dto.TaskAttachmentDTO;
 import com.prunny.task.service.dto.TaskAttachmentReq;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,7 +85,7 @@ public class TaskAttachmentServiceImpl implements TaskAttachmentService {
             String fileUrl = "/uploads/" + storedFileName;
 
             // Get logged-in user ID (mock for now)
-            Long uploadedBy = getCurrentUserId();
+            Long uploadedBy = SecurityUtils.getCurrentUserId().orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Task task = new Task();
         task.setId(taskId);
             // Save attachment entity
@@ -101,21 +103,6 @@ public class TaskAttachmentServiceImpl implements TaskAttachmentService {
             throw new RuntimeException("File upload failed", e);
         }
     }
-
-    private Long getCurrentUserId() {
-        // Mock until user service ready
-        return 1L; // replace with actual user from SecurityContext
-    }
-
-//    private Long getCurrentUserId() {
-//        var auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth instanceof JwtAuthenticationToken jwtAuth) {
-//            return Long.valueOf(jwtAuth.getToken().getClaim("user_id"));
-//        }
-//        return null;
-//    }
-
-
 
     @Override
     public TaskAttachmentDTO update(TaskAttachmentDTO taskAttachmentDTO) {

@@ -85,8 +85,8 @@ public class AuthUserResource {
 
         ApiResponse<JwtResponse> apiResponse = new ApiResponse<>("User Login Sucessful", jwtResponse);
 
-        return ResponseEntity.created(new URI("/api/auth/" + jwtResponse.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, jwtResponse.getId().toString()))
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createAlert(applicationName, "User logged in successfully", jwtResponse.getId().toString()))
             .body(apiResponse);
     }
 
