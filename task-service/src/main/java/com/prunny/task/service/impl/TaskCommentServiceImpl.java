@@ -1,5 +1,6 @@
 package com.prunny.task.service.impl;
 
+import com.prunny.task.client.NotificationClient;
 import com.prunny.task.client.ProjectServiceClient;
 import com.prunny.task.domain.Task;
 import com.prunny.task.domain.TaskComment;
@@ -11,6 +12,7 @@ import com.prunny.task.service.dto.TaskCommentDTO;
 import com.prunny.task.service.dto.TaskCommentReq;
 import com.prunny.task.service.mapper.TaskCommentMapper;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,13 +39,16 @@ public class TaskCommentServiceImpl implements TaskCommentService {
     private final TaskRepository taskRepository;
 
     private final TaskCommentMapper taskCommentMapper;
+  
+    private final NotificationClient notificationClient;
 
     private final ProjectServiceClient projectServiceClient;
 
-    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskRepository taskRepository, TaskCommentMapper taskCommentMapper, ProjectServiceClient projectServiceClient) {
+    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskRepository taskRepository, TaskCommentMapper taskCommentMapper, ProjectServiceClient projectServiceClient,  NotificationClient notificationClient) {
         this.taskCommentRepository = taskCommentRepository;
         this.taskRepository = taskRepository;
         this.taskCommentMapper = taskCommentMapper;
+        this.notificationClient = notificationClient;
         this.projectServiceClient = projectServiceClient;
     }
 
@@ -58,6 +63,13 @@ public class TaskCommentServiceImpl implements TaskCommentService {
         taskComment.setTask(task);
         taskComment.setUser_id(userId);
         taskComment = taskCommentRepository.save(taskComment);
+        notificationClient.sendTaskCommented(
+            taskComment.getTask().getId(),
+            taskComment.getUser_id(),
+            taskCommentReq.getComment(),
+            ZonedDateTime.now()
+        );
+
         return taskCommentMapper.toDto(taskComment);
     }
 
