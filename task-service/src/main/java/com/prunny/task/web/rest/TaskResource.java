@@ -135,6 +135,11 @@ public class TaskResource {
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(taskDTO));
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<List<TaskDTO>> getUserTask() {
+        List<TaskDTO> taskDTO = taskService.getUserTasks();
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(taskDTO));
+    }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @DeleteMapping("/{id}")
