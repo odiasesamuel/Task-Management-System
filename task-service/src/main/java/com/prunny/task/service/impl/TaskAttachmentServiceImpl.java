@@ -84,7 +84,7 @@ public class TaskAttachmentServiceImpl implements TaskAttachmentService {
             // Build file URL (mock for now — local server path)
             String fileUrl = "/uploads/" + storedFileName;
 
-            // Get logged-in user ID (mock for now)
+            // Get logged-in user ID
             Long uploadedBy = SecurityUtils.getCurrentUserId().orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Task task = new Task();
         task.setId(taskId);
