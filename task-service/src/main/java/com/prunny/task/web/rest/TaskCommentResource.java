@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -47,8 +48,8 @@ public class TaskCommentResource {
         this.taskCommentRepository = taskCommentRepository;
     }
 
-
-    @PostMapping("/{taskId}/comments")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
+    @PostMapping("/{taskId}")
     public ResponseEntity<TaskCommentDTO> createTaskComment( @PathVariable(value = "taskId", required = false) final Long taskId,@Valid @RequestBody TaskCommentReq taskCommentReq) throws URISyntaxException {
         LOG.debug("REST request to save TaskComment : {}", taskCommentReq);
         if (taskCommentReq.getId() != null) {
@@ -60,6 +61,7 @@ public class TaskCommentResource {
             .body(taskCommentDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PutMapping("/{id}")
     public ResponseEntity<TaskCommentDTO> updateTaskComment(
         @PathVariable(value = "id", required = false) final Long id,
@@ -83,7 +85,7 @@ public class TaskCommentResource {
             .body(taskCommentDTO);
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<TaskCommentDTO> partialUpdateTaskComment(
         @PathVariable(value = "id", required = false) final Long id,
@@ -109,6 +111,7 @@ public class TaskCommentResource {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @GetMapping("")
     public ResponseEntity<List<TaskCommentDTO>> getAllTaskComments(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of TaskComments");
@@ -125,13 +128,15 @@ public class TaskCommentResource {
 //    }
 
     //get all comments by taskId
-    @GetMapping("/{taskId}/comments")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskCommentServiceImpl.canAccessTaskComment(#taskId)")
+    @GetMapping("/{taskId}")
     public ResponseEntity<List<TaskCommentDTO>> getTaskComment(@PathVariable("taskId") Long taskId) {
         LOG.debug("REST request to get TaskComment : {}", taskId);
         List<TaskCommentDTO> taskCommentDTO = taskCommentService.findTaskComments(taskId);
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(taskCommentDTO));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTaskComment(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete TaskComment : {}", id);

@@ -1,9 +1,12 @@
 package com.prunny.task.service.impl;
 
 import com.prunny.task.client.NotificationClient;
+import com.prunny.task.client.ProjectServiceClient;
 import com.prunny.task.domain.Task;
 import com.prunny.task.domain.TaskComment;
 import com.prunny.task.repository.TaskCommentRepository;
+import com.prunny.task.repository.TaskRepository;
+import com.prunny.task.security.SecurityUtils;
 import com.prunny.task.service.TaskCommentService;
 import com.prunny.task.service.dto.TaskCommentDTO;
 import com.prunny.task.service.dto.TaskCommentReq;
@@ -18,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,22 +36,32 @@ public class TaskCommentServiceImpl implements TaskCommentService {
 
     private final TaskCommentRepository taskCommentRepository;
 
+    private final TaskRepository taskRepository;
+
     private final TaskCommentMapper taskCommentMapper;
+  
     private final NotificationClient notificationClient;
 
-    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskCommentMapper taskCommentMapper, NotificationClient notificationClient) {
+    private final ProjectServiceClient projectServiceClient;
+
+    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskRepository taskRepository, TaskCommentMapper taskCommentMapper, ProjectServiceClient projectServiceClient,  NotificationClient notificationClient) {
         this.taskCommentRepository = taskCommentRepository;
+        this.taskRepository = taskRepository;
         this.taskCommentMapper = taskCommentMapper;
         this.notificationClient = notificationClient;
+        this.projectServiceClient = projectServiceClient;
     }
 
     @Override
     public TaskCommentDTO save(TaskCommentReq taskCommentReq,Long taskId) {
         LOG.debug("Request to save TaskComment : {}", taskCommentReq);
+        Long userId = SecurityUtils.getCurrentUserId().orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         Task task = new Task();
         task.setId(taskId);
         TaskComment taskComment = taskCommentMapper.toEntity(taskCommentReq);
         taskComment.setTask(task);
+        taskComment.setUser_id(userId);
         taskComment = taskCommentRepository.save(taskComment);
         notificationClient.sendTaskCommented(
             taskComment.getTask().getId(),
@@ -111,5 +125,13 @@ public class TaskCommentServiceImpl implements TaskCommentService {
     public void delete(Long id) {
         LOG.debug("Request to delete TaskComment : {}", id);
         taskCommentRepository.deleteById(id);
+    }
+
+    public boolean canAccessTaskComment(Long taskId) {
+        LOG.debug("Checking access to project: {}", taskId);
+
+        Task task = taskRepository.findById(taskId).orElse(null);
+
+        return projectServiceClient.canAccessProject(task.getProjectId());
     }
 }

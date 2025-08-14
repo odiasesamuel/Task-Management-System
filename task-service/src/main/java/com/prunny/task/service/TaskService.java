@@ -22,5 +22,7 @@ public interface TaskService {
 
     List<TaskDTO> getProjectTasks(Long projectId);
 
+    List<TaskDTO> getUserProjectTask(Long projectId);
+
     void delete(Long id);
 }

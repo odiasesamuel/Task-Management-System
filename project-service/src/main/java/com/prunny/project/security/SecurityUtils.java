@@ -32,6 +32,24 @@ public final class SecurityUtils {
         return Optional.ofNullable(extractPrincipal(securityContext.getAuthentication()));
     }
 
+    /**
+     * Get the userId of the current user from JWT.
+     *
+     * @return the userId of the current user.
+     */
+    public static Optional<Long> getCurrentUserId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+            Object userIdClaim = jwt.getClaim("userId");
+            if (userIdClaim instanceof Number) {
+                return Optional.of(((Number) userIdClaim).longValue());
+            }
+        }
+        return Optional.empty();
+    }
+
     private static String extractPrincipal(Authentication authentication) {
         if (authentication == null) {
             return null;

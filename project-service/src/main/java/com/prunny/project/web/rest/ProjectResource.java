@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -51,6 +52,7 @@ public class ProjectResource {
         this.projectRepository = projectRepository;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PostMapping("")
     public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody ProjectReq projectReq) throws URISyntaxException {
         LOG.debug("REST request to save Project : {}", projectReq);
@@ -63,6 +65,7 @@ public class ProjectResource {
             .body(projectDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PutMapping("/{id}")
     public ResponseEntity<ProjectDTO> updateProject(
         @PathVariable(value = "id", required = false) final Long id,
@@ -86,6 +89,7 @@ public class ProjectResource {
             .body(projectDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<ProjectDTO> partialUpdateProject(
         @PathVariable(value = "id", required = false) final Long id,
@@ -111,6 +115,7 @@ public class ProjectResource {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @GetMapping("")
     public ResponseEntity<List<ProjectDTO>> getAllProjects(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of Projects");
@@ -119,12 +124,15 @@ public class ProjectResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @projectServiceImpl.canAccessProject(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<ProjectDTO> getProject(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Project : {}", id);
         Optional<ProjectDTO> projectDTO = projectService.findOne(id);
         return ResponseUtil.wrapOrNotFound(projectDTO);
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @projectServiceImpl.canAccessMultipleTeamProject(#teamId)")
     @GetMapping("/{teamId}/projects")
     public ResponseEntity<List<ProjectDTO>> getProjectByTeamId(@PathVariable("teamId") Long teamId) {
         LOG.debug("REST request to get Project : {}", teamId);
@@ -132,12 +140,15 @@ public class ProjectResource {
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(projectDTO));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @projectServiceImpl.canAccessProject(#id)")
     @GetMapping("/{id}/progress")
     public ResponseEntity<ProgressDTO> getProgress(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Project : {}", id);
         Optional<ProgressDTO> progressDTO = Optional.ofNullable(projectService.findProgress(id));
         return ResponseUtil.wrapOrNotFound(progressDTO);
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Project : {}", id);
@@ -145,5 +156,11 @@ public class ProjectResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/{projectId}/can-access")
+    public ResponseEntity<Boolean> canAccessProject(@PathVariable("projectId") Long projectId) {
+        boolean canAccess = projectService.canAccessProject(projectId);
+        return ResponseEntity.ok(canAccess);
     }
 }

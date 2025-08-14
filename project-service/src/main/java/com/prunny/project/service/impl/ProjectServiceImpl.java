@@ -1,8 +1,10 @@
 package com.prunny.project.service.impl;
 
 import com.prunny.project.client.TaskServiceClient;
+import com.prunny.project.client.TeamServiceClient;
 import com.prunny.project.domain.Project;
 import com.prunny.project.repository.ProjectRepository;
+import com.prunny.project.security.SecurityUtils;
 import com.prunny.project.service.ProjectService;
 import com.prunny.project.service.dto.ProgressDTO;
 import com.prunny.project.service.dto.ProjectDTO;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,16 +39,25 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final TaskServiceClient taskServiceClient;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, TaskServiceClient taskServiceClient) {
+    private final TeamServiceClient teamServiceClient;
+
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, TaskServiceClient taskServiceClient, TeamServiceClient teamServiceClient) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.taskServiceClient = taskServiceClient;
+        this.teamServiceClient = teamServiceClient;
     }
 
     @Override
     public ProjectDTO save(ProjectReq projectReq) {
         LOG.debug("Request to save Project : {}", projectReq);
+
+        Long userId = SecurityUtils.getCurrentUserId().orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         Project project = projectMapper.toEntity(projectReq);
+        project.setCreatedByUserId(userId);
+
+
         project = projectRepository.save(project);
         return projectMapper.toDto(project);
     }
@@ -127,5 +139,30 @@ public class ProjectServiceImpl implements ProjectService {
     public void delete(Long id) {
         LOG.debug("Request to delete Project : {}", id);
         projectRepository.deleteById(id);
+    }
+
+    /**
+     * Check if the current user can access the specified project
+     * Used by @PreAuthorize annotation
+     */
+    public boolean canAccessProject(Long projectId) {
+        LOG.debug("Checking access to project: {}", projectId);
+
+        Optional<Project> project = projectRepository.findById(projectId);
+        if (project.isEmpty()) {
+            return false;
+        }
+
+        Long teamId = project.get().getTeamId();
+        return teamServiceClient.canAccessTeam(teamId);
+    }
+
+    /**
+     * Check if the current user can access all the project handled by a team
+     * Used by @PreAuthorize annotation
+     */
+    public boolean canAccessMultipleTeamProject(Long teamId) {
+        LOG.debug("Checking access to all the project handled by a team: {}", teamId);
+        return teamServiceClient.canAccessTeam(teamId);
     }
 }

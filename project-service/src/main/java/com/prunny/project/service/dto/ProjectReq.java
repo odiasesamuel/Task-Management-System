@@ -21,9 +21,9 @@ public class ProjectReq implements Serializable {
 
     private Long teamId;
 
-    @NotNull
-    private Long createdByUserId;
-    // Remove later to be gotten from spring security context
+//    @NotNull
+//    private Long createdByUserId;
+    // Should be gotten from spring security context
 
     public Long getId() {
         return id;
@@ -57,14 +57,6 @@ public class ProjectReq implements Serializable {
         this.teamId = teamId;
     }
 
-    public Long getCreatedByUserId() {
-        return createdByUserId;
-    }
-
-    public void setCreatedByUserId(Long createdByUserId) {
-        this.createdByUserId = createdByUserId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -93,7 +85,6 @@ public class ProjectReq implements Serializable {
             ", projectName='" + getProjectName() + "'" +
             ", description='" + getDescription() + "'" +
             ", teamId=" + getTeamId() +
-            ", createdByUserId=" + getCreatedByUserId() +
             "}";
     }
 }

@@ -89,17 +89,11 @@ public class TeamService {
                 throw new AlreadyExistException("Team with this name already exists");
             });
 
-        // Get admin from Security Context
-        User admin = SecurityUtils.getCurrentUserLogin()
-            .flatMap(userRepository::findByEmail)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
         List<User> members = userRepository.findAllById(teamRequestDTO.getMemberIds());
         Set<User> membersSet = new HashSet<>(members);
 
         existingTeam.setTeamName(teamRequestDTO.getTeamName());
         existingTeam.setMembers(membersSet);
-        existingTeam.setAdmin(admin);
 
         Team savedTeam = teamRepository.save(existingTeam);
         return teamMapper.toDto(savedTeam);

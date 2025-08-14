@@ -31,4 +31,6 @@ public interface ProjectService {
     ProgressDTO findProgress(Long id);
 
     void delete(Long id);
+
+    boolean canAccessProject(Long projectId);
 }

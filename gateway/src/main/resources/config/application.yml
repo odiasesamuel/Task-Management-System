@@ -154,6 +154,31 @@ spring:
           filters:
             - StripPrefix=2
             - JWTRelay
+
+        - id: project
+          uri: lb://PROJECT
+          predicates:
+            - Path=/services/project/**
+          filters:
+            - StripPrefix=2
+            - JWTRelay
+
+        - id: taskservice
+          uri: lb://TASKSERVICE
+          predicates:
+            - Path=/services/taskservice/**
+          filters:
+            - StripPrefix=2
+            - JWTRelay
+
+        - id: reportingservice
+          uri: lb://REPORTINGSERVICE
+          predicates:
+            - Path=/services/reportingservice/**
+          filters:
+            - StripPrefix=2
+            - JWTRelay
+
       httpclient:
         pool:
           max-connections: 1000

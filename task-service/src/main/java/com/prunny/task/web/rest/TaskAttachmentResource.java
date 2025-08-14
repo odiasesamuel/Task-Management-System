@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -49,6 +50,7 @@ public class TaskAttachmentResource {
     }
 
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskAttachmentServiceImpl.canAccessUploadTaskAttachment(#taskId)")
     @PostMapping("/{taskId}/attachments")
     public ResponseEntity<TaskAttachmentDTO> uploadAttachment(
         @PathVariable Long taskId,
@@ -58,7 +60,7 @@ public class TaskAttachmentResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PutMapping("/{id}")
     public ResponseEntity<TaskAttachmentDTO> updateTaskAttachment(
         @PathVariable(value = "id", required = false) final Long id,
@@ -82,7 +84,7 @@ public class TaskAttachmentResource {
             .body(taskAttachmentDTO);
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<TaskAttachmentDTO> partialUpdateTaskAttachment(
         @PathVariable(value = "id", required = false) final Long id,
@@ -108,6 +110,7 @@ public class TaskAttachmentResource {
         );
     }
 
+
     @GetMapping("")
     public ResponseEntity<List<TaskAttachmentDTO>> getAllTaskAttachments(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
@@ -125,6 +128,7 @@ public class TaskAttachmentResource {
         return ResponseUtil.wrapOrNotFound(taskAttachmentDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTaskAttachment(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete TaskAttachment : {}", id);

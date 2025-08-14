@@ -1,6 +1,8 @@
 package com.prunny.task.client;
 
 import com.prunny.task.service.dto.ProjectDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.http.*;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class ProjectServiceClient {
 
     private final RestTemplate restTemplate;
+    private static final Logger LOG = LoggerFactory.getLogger(ProjectServiceClient.class);
 
     public ProjectServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -38,6 +41,32 @@ public class ProjectServiceClient {
         } catch (HttpClientErrorException.NotFound ex) {
 
             return Optional.empty();
+        }
+    }
+
+    public boolean canAccessProject(Long projectId) {
+        String API_URL = "http://project/api/projects/" + projectId + "/can-access";
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            String token = getCurrentToken();
+            if (token != null) {
+                headers.set("Authorization", "Bearer " + token);
+            }
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<Boolean> response = restTemplate.exchange(
+                API_URL,
+                HttpMethod.GET,
+                entity,
+                Boolean.class
+            );
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            LOG.error("Error checking team access for team {}: {}", projectId, e.getMessage());
+            return false;
         }
     }
 

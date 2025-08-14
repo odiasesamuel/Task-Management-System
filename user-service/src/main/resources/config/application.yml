@@ -258,3 +258,8 @@ jhipster:
 # ===================================================================
 
 # application:
+
+app:
+  file:
+    upload-dir: ./uploaded-files
+
