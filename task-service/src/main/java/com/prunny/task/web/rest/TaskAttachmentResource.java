@@ -50,7 +50,7 @@ public class TaskAttachmentResource {
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskServiceImpl.canAccessProject(#projectId)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskAttachmentServiceImpl.canAccessUploadTaskAttachment(#taskId)")
     @PostMapping("/{taskId}/attachments")
     public ResponseEntity<TaskAttachmentDTO> uploadAttachment(
         @PathVariable Long taskId,
@@ -120,7 +120,6 @@ public class TaskAttachmentResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<TaskAttachmentDTO> getTaskAttachment(@PathVariable("id") Long id) {

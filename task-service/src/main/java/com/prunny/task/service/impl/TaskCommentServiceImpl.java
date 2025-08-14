@@ -1,8 +1,10 @@
 package com.prunny.task.service.impl;
 
+import com.prunny.task.client.ProjectServiceClient;
 import com.prunny.task.domain.Task;
 import com.prunny.task.domain.TaskComment;
 import com.prunny.task.repository.TaskCommentRepository;
+import com.prunny.task.repository.TaskRepository;
 import com.prunny.task.security.SecurityUtils;
 import com.prunny.task.service.TaskCommentService;
 import com.prunny.task.service.dto.TaskCommentDTO;
@@ -32,11 +34,17 @@ public class TaskCommentServiceImpl implements TaskCommentService {
 
     private final TaskCommentRepository taskCommentRepository;
 
+    private final TaskRepository taskRepository;
+
     private final TaskCommentMapper taskCommentMapper;
 
-    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskCommentMapper taskCommentMapper) {
+    private final ProjectServiceClient projectServiceClient;
+
+    public TaskCommentServiceImpl(TaskCommentRepository taskCommentRepository, TaskRepository taskRepository, TaskCommentMapper taskCommentMapper, ProjectServiceClient projectServiceClient) {
         this.taskCommentRepository = taskCommentRepository;
+        this.taskRepository = taskRepository;
         this.taskCommentMapper = taskCommentMapper;
+        this.projectServiceClient = projectServiceClient;
     }
 
     @Override
@@ -105,5 +113,13 @@ public class TaskCommentServiceImpl implements TaskCommentService {
     public void delete(Long id) {
         LOG.debug("Request to delete TaskComment : {}", id);
         taskCommentRepository.deleteById(id);
+    }
+
+    public boolean canAccessTaskComment(Long taskId) {
+        LOG.debug("Checking access to project: {}", taskId);
+
+        Task task = taskRepository.findById(taskId).orElse(null);
+
+        return projectServiceClient.canAccessProject(task.getProjectId());
     }
 }

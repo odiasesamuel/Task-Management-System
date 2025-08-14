@@ -128,7 +128,7 @@ public class TaskCommentResource {
 //    }
 
     //get all comments by taskId
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskServiceImpl.canAccessTask(#projectId)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEAM_LEAD') or @taskCommentServiceImpl.canAccessTaskComment(#taskId)")
     @GetMapping("/{taskId}")
     public ResponseEntity<List<TaskCommentDTO>> getTaskComment(@PathVariable("taskId") Long taskId) {
         LOG.debug("REST request to get TaskComment : {}", taskId);
