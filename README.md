@@ -12,7 +12,7 @@ A comprehensive microservices-based web application designed to help teams manag
 - **Secure Authentication**: JWT-based authentication and authorization
 - **Microservices Architecture**: Scalable and maintainable service-oriented design
 
-### Services Overview
+## 🧩 Services Overview
 
 1. **Service Discovery (Eureka Server)**: Facilitates the discovery of services within the microservices architecture.
 2. **API Gateway**: Acts as a single entry point for all client requests for route management and load balancing
@@ -121,11 +121,11 @@ The system implements a hierarchical role-based access control system with three
     mvn spring-boot:run
     
     # Notification Service
-    cd notification-service
+    cd notificationservice
     mvn spring-boot:run
     
     # Reporting Service
-    cd reporting-service
+    cd reportingservice
     mvn spring-boot:run
     ```
 
